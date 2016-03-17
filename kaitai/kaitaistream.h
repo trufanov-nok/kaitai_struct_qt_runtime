@@ -20,13 +20,15 @@ public:
     uint32_t read_u4be();
     uint64_t read_u8be();
 
-    sint16_t read_s2le();
-    sint32_t read_s4le();
-    sint64_t read_s8le();
+    int8_t read_s1();
 
-    sint16_t read_s2be();
-    sint32_t read_s4be();
-    sint64_t read_s8be();
+    int16_t read_s2le();
+    int32_t read_s4le();
+    int64_t read_s8le();
+
+    int16_t read_s2be();
+    int32_t read_s4be();
+    int64_t read_s8be();
 
 private:
     std::istream* io_;
