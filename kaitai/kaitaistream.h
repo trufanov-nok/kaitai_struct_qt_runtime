@@ -2,12 +2,18 @@
 #define KAITAI_STREAM_H
 
 #include <istream>
+#include <fstream>
 #include <stdint.h>
+#include <sys/types.h>
 
-class KaitaiStream {
+namespace kaitai {
+
+class kstream {
 public:
-    KaitaiStream(std::istream* io);
+    kstream(std::istream* io);
 
+    void seek(std::ifstream::pos_type pos);
+    std::ifstream::pos_type pos();
     void close();
 
     uint8_t read_u1();
@@ -30,8 +36,13 @@ public:
     int32_t read_s4be();
     int64_t read_s8be();
 
+    std::string ensure_fixed_contents(ssize_t len, const char* expected);
+    std::string read_str_byte_limit(ssize_t len, const char* encoding);
+
 private:
-    std::istream* io_;
+    std::istream* m_io;
 };
+
+}
 
 #endif

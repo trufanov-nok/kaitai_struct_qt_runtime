@@ -3,13 +3,17 @@
 
 #include <kaitai/kaitaistream.h>
 
-class KaitaiStruct {
+namespace kaitai {
+
+class kstruct {
 public:
-    KaitaiStruct(KaitaiStream *_io) { _m_io = _io; };
-private:
-    KaitaiStream *_m_io;
+    kstruct(kstream *_io) { m__io = _io; };
+protected:
+    kstream *m__io;
 public:
-    KaitaiStream *_io() { return _m_io; };
+    kstream *_io() { return m__io; };
 };
+
+}
 
 #endif
