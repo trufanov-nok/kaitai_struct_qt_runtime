@@ -22,6 +22,10 @@ std::ifstream::pos_type kaitai::kstream::pos() {
     return m_io->tellg();
 }
 
+bool kaitai::kstream::is_eof() const {
+    return m_io->eof();
+}
+
 uint8_t kaitai::kstream::read_u1() {
     char t;
     m_io->get(t);

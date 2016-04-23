@@ -14,6 +14,7 @@ public:
 
     void seek(std::ifstream::pos_type pos);
     std::ifstream::pos_type pos();
+    bool is_eof() const;
     void close();
 
     uint8_t read_u1();
