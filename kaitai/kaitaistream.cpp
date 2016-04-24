@@ -23,7 +23,14 @@ std::ifstream::pos_type kaitai::kstream::pos() {
 }
 
 bool kaitai::kstream::is_eof() const {
-    return m_io->eof();
+    char t;
+    m_io->get(t);
+    if (m_io->eof()) {
+        return true;
+    } else {
+        m_io->unget();
+        return false;
+    }
 }
 
 uint8_t kaitai::kstream::read_u1() {
