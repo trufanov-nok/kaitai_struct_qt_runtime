@@ -38,7 +38,8 @@ public:
     int64_t read_s8be();
 
     std::string ensure_fixed_contents(ssize_t len, const char* expected);
-    std::string read_str_byte_limit(ssize_t len, const char* encoding);
+    std::string read_str_byte_limit(ssize_t len);
+    std::string read_strz(char term, bool include, bool consume, bool eos_error);
 
 private:
     std::istream* m_io;

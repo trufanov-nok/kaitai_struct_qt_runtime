@@ -154,7 +154,7 @@ int64_t kaitai::kstream::read_s8be() {
 }
 
 std::string kaitai::kstream::ensure_fixed_contents(ssize_t len, const char *expectedChar) {
-    std::string actual = read_str_byte_limit(len, NULL);
+    std::string actual = read_str_byte_limit(len);
     std::string expected(expectedChar);
 
     if (actual != expected) {
@@ -166,8 +166,26 @@ std::string kaitai::kstream::ensure_fixed_contents(ssize_t len, const char *expe
     return actual;
 }
 
-std::string kaitai::kstream::read_str_byte_limit(ssize_t len, const char *encoding) {
+std::string kaitai::kstream::read_str_byte_limit(ssize_t len) {
     std::vector<char> result(len);
     m_io->read(&result[0], len);
     return std::string(&result[0], &result[len]);
+}
+
+std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bool eos_error) {
+  std::string result;
+  std::getline(*m_io, result, term);
+  if (m_io->eof()) {
+    // encountered EOF
+    if (eos_error) {
+      // throw exception here
+    }
+  } else {
+    // encountered terminator
+    if (include)
+      result.push_back(term);
+    if (!consume)
+      m_io->unget();
+  }
+  return result;
 }
