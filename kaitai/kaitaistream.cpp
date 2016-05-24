@@ -189,3 +189,7 @@ std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bo
   }
   return result;
 }
+
+std::string kaitai::kstream::read_bytes(ssize_t len) {
+    return read_str_byte_limit(len);
+}

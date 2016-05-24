@@ -11,6 +11,7 @@ namespace kaitai {
 class kstream {
 public:
     kstream(std::istream* io);
+    kstream(std::string& data);
 
     void seek(std::ifstream::pos_type pos);
     std::ifstream::pos_type pos();
@@ -40,6 +41,8 @@ public:
     std::string ensure_fixed_contents(ssize_t len, const char* expected);
     std::string read_str_byte_limit(ssize_t len);
     std::string read_strz(char term, bool include, bool consume, bool eos_error);
+
+    std::string read_bytes(ssize_t len);
 
 private:
     std::istream* m_io;
