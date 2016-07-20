@@ -193,3 +193,30 @@ std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bo
 std::string kaitai::kstream::read_bytes(ssize_t len) {
     return read_str_byte_limit(len);
 }
+
+std::string kaitai::kstream::read_bytes_full() {
+    std::ifstream::pos_type p1 = m_io->tellg();
+    m_io->seekg(0, std::ios::end);
+    std::ifstream::pos_type p2 = m_io->tellg();
+    size_t len = p2 - p1;
+
+    // Note: this requires a std::string to be backed with a
+    // contiguous buffer. Officially, it's a only requirement since
+    // C++11 (C++98 and C++03 didn't have this requirement), but all
+    // major implementations had contiguous buffers anyway.
+    std::string result(len, ' ');
+    m_io->seekg(p1);
+    m_io->read(&result[0], len);
+
+    return result;
+}
+
+std::string kaitai::kstream::process_xor_one(std::string data, uint8_t key) {
+    int len = data.length();
+    std::string result(len, ' ');
+
+    for (int i = 0; i < len; i++)
+        result[i] = data[i] ^ key;
+
+    return result;
+}

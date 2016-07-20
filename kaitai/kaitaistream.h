@@ -43,6 +43,9 @@ public:
     std::string read_strz(char term, bool include, bool consume, bool eos_error);
 
     std::string read_bytes(ssize_t len);
+    std::string read_bytes_full();
+
+    static std::string process_xor_one(std::string data, uint8_t key);
 
 private:
     std::istream* m_io;
