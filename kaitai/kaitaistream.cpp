@@ -220,3 +220,19 @@ std::string kaitai::kstream::process_xor_one(std::string data, uint8_t key) {
 
     return result;
 }
+
+std::string kaitai::kstream::process_xor_many(std::string data, std::string key) {
+    int len = data.length();
+    int kl = key.length();
+    std::string result(len, ' ');
+
+    int ki = 0;
+    for (int i = 0; i < len; i++) {
+        result[i] = data[i] ^ key[ki];
+        ki++;
+        if (ki >= kl)
+            ki = 0;
+    }
+
+    return result;
+}

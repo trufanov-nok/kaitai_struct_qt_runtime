@@ -46,6 +46,7 @@ public:
     std::string read_bytes_full();
 
     static std::string process_xor_one(std::string data, uint8_t key);
+    static std::string process_xor_many(std::string data, std::string key);
 
 private:
     std::istream* m_io;
