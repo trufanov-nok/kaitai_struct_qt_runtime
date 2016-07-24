@@ -236,3 +236,15 @@ std::string kaitai::kstream::process_xor_many(std::string data, std::string key)
 
     return result;
 }
+
+std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
+    int len = data.length();
+    std::string result(len, ' ');
+
+    for (int i = 0; i < len; i++) {
+        uint8_t bits = data[i];
+        result[i] = (bits << amount) | (bits >> (8 - amount));
+    }
+
+    return result;
+}

@@ -47,6 +47,7 @@ public:
 
     static std::string process_xor_one(std::string data, uint8_t key);
     static std::string process_xor_many(std::string data, std::string key);
+    static std::string process_rotate_left(std::string data, int amount);
 
 private:
     std::istream* m_io;
