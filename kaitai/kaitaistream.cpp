@@ -14,13 +14,9 @@ void kaitai::kstream::close() {
     //  m_io->close();
 }
 
-void kaitai::kstream::seek(std::ifstream::pos_type pos) {
-    m_io->seekg(pos);
-}
-
-std::ifstream::pos_type kaitai::kstream::pos() {
-    return m_io->tellg();
-}
+// ========================================================================
+// Stream positioning
+// ========================================================================
 
 bool kaitai::kstream::is_eof() const {
     char t;
@@ -33,65 +29,21 @@ bool kaitai::kstream::is_eof() const {
     }
 }
 
-uint8_t kaitai::kstream::read_u1() {
-    char t;
-    m_io->get(t);
-    return t;
+void kaitai::kstream::seek(std::ifstream::pos_type pos) {
+    m_io->seekg(pos);
 }
 
-uint16_t kaitai::kstream::read_u2le() {
-    uint16_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 2);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_16(t);
-#endif
-    return t;
+std::ifstream::pos_type kaitai::kstream::pos() {
+    return m_io->tellg();
 }
 
-uint32_t kaitai::kstream::read_u4le() {
-    uint32_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_32(t);
-#endif
-    return t;
-}
+// ========================================================================
+// Integer numbers
+// ========================================================================
 
-uint64_t kaitai::kstream::read_u8le() {
-    uint64_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_64(t);
-#endif
-    return t;
-}
-
-uint16_t kaitai::kstream::read_u2be() {
-    uint16_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 2);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_16(t);
-#endif
-    return t;
-}
-
-uint32_t kaitai::kstream::read_u4be() {
-    uint32_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_32(t);
-#endif
-    return t;
-}
-
-uint64_t kaitai::kstream::read_u8be() {
-    uint64_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_64(t);
-#endif
-    return t;
-}
+// ------------------------------------------------------------------------
+// Signed
+// ------------------------------------------------------------------------
 
 int8_t kaitai::kstream::read_s1() {
     char t;
@@ -99,32 +51,9 @@ int8_t kaitai::kstream::read_s1() {
     return t;
 }
 
-int16_t kaitai::kstream::read_s2le() {
-    int16_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 2);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_16(t);
-#endif
-    return t;
-}
-
-int32_t kaitai::kstream::read_s4le() {
-    int32_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_32(t);
-#endif
-    return t;
-}
-
-int64_t kaitai::kstream::read_s8le() {
-    int64_t t;
-    m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_64(t);
-#endif
-    return t;
-}
+// ........................................................................
+// Big-endian
+// ........................................................................
 
 int16_t kaitai::kstream::read_s2be() {
     int16_t t;
@@ -153,18 +82,124 @@ int64_t kaitai::kstream::read_s8be() {
     return t;
 }
 
-std::string kaitai::kstream::ensure_fixed_contents(ssize_t len, const char *expectedChar) {
-    std::string actual = read_str_byte_limit(len);
-    std::string expected(expectedChar);
+// ........................................................................
+// Little-endian
+// ........................................................................
 
-    if (actual != expected) {
-        std::cout << "Fixed contents mismatch!\n";
-        std::cout << actual << "\n";
-        std::cout << expected << "\n";
-    }
-
-    return actual;
+int16_t kaitai::kstream::read_s2le() {
+    int16_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 2);
+#if __BYTE_ORDER == __BIG_ENDIAN
+    t = bswap_16(t);
+#endif
+    return t;
 }
+
+int32_t kaitai::kstream::read_s4le() {
+    int32_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 4);
+#if __BYTE_ORDER == __BIG_ENDIAN
+    t = bswap_32(t);
+#endif
+    return t;
+}
+
+int64_t kaitai::kstream::read_s8le() {
+    int64_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 8);
+#if __BYTE_ORDER == __BIG_ENDIAN
+    t = bswap_64(t);
+#endif
+    return t;
+}
+
+// ------------------------------------------------------------------------
+// Unsigned
+// ------------------------------------------------------------------------
+
+uint8_t kaitai::kstream::read_u1() {
+    char t;
+    m_io->get(t);
+    return t;
+}
+
+// ........................................................................
+// Big-endian
+// ........................................................................
+
+uint16_t kaitai::kstream::read_u2be() {
+    uint16_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 2);
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    t = bswap_16(t);
+#endif
+    return t;
+}
+
+uint32_t kaitai::kstream::read_u4be() {
+    uint32_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 4);
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    t = bswap_32(t);
+#endif
+    return t;
+}
+
+uint64_t kaitai::kstream::read_u8be() {
+    uint64_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 8);
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    t = bswap_64(t);
+#endif
+    return t;
+}
+
+// ........................................................................
+// Little-endian
+// ........................................................................
+
+uint16_t kaitai::kstream::read_u2le() {
+    uint16_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 2);
+#if __BYTE_ORDER == __BIG_ENDIAN
+    t = bswap_16(t);
+#endif
+    return t;
+}
+
+uint32_t kaitai::kstream::read_u4le() {
+    uint32_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 4);
+#if __BYTE_ORDER == __BIG_ENDIAN
+    t = bswap_32(t);
+#endif
+    return t;
+}
+
+uint64_t kaitai::kstream::read_u8le() {
+    uint64_t t;
+    m_io->read(reinterpret_cast<char *>(&t), 8);
+#if __BYTE_ORDER == __BIG_ENDIAN
+    t = bswap_64(t);
+#endif
+    return t;
+}
+
+// ========================================================================
+// Floating point numbers
+// ========================================================================
+
+// ........................................................................
+// Big-endian
+// ........................................................................
+
+// ........................................................................
+// Little-endian
+// ........................................................................
+
+// ========================================================================
+// Strings
+// ========================================================================
 
 std::string kaitai::kstream::read_str_byte_limit(ssize_t len) {
     std::vector<char> result(len);
@@ -190,6 +225,10 @@ std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bo
   return result;
 }
 
+// ========================================================================
+// Byte arrays
+// ========================================================================
+
 std::string kaitai::kstream::read_bytes(ssize_t len) {
     return read_str_byte_limit(len);
 }
@@ -210,6 +249,23 @@ std::string kaitai::kstream::read_bytes_full() {
 
     return result;
 }
+
+std::string kaitai::kstream::ensure_fixed_contents(ssize_t len, const char *expectedChar) {
+    std::string actual = read_str_byte_limit(len);
+    std::string expected(expectedChar);
+
+    if (actual != expected) {
+        std::cout << "Fixed contents mismatch!\n";
+        std::cout << actual << "\n";
+        std::cout << expected << "\n";
+    }
+
+    return actual;
+}
+
+// ========================================================================
+// Byte array processing
+// ========================================================================
 
 std::string kaitai::kstream::process_xor_one(std::string data, uint8_t key) {
     int len = data.length();
