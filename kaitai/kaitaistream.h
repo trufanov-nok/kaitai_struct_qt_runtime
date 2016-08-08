@@ -22,6 +22,7 @@ public:
     bool is_eof() const;
     void seek(std::ifstream::pos_type pos);
     std::ifstream::pos_type pos();
+    std::ifstream::pos_type size();
 
     // ========================================================================
     // Integer numbers

@@ -37,6 +37,14 @@ std::ifstream::pos_type kaitai::kstream::pos() {
     return m_io->tellg();
 }
 
+std::ifstream::pos_type kaitai::kstream::size() {
+    std::ifstream::pos_type cur_pos = m_io->tellg();
+    m_io->seekg(0, std::ios::end);
+    std::ifstream::pos_type len = m_io->tellg();
+    m_io->seekg(cur_pos);
+    return len;
+}
+
 // ========================================================================
 // Integer numbers
 // ========================================================================
