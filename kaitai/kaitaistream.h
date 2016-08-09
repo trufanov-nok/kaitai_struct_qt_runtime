@@ -161,8 +161,33 @@ public:
     /** @name Byte array processing */
     //@{
 
+    /**
+     * Performs a XOR processing with given data, XORing every byte of input with a single
+     * given value.
+     * @param data data to process
+     * @param key value to XOR with
+     * @return processed data
+     */
     static std::string process_xor_one(std::string data, uint8_t key);
+
+    /**
+     * Performs a XOR processing with given data, XORing every byte of input with a key
+     * array, repeating key array many times, if necessary (i.e. if data array is longer
+     * than key array).
+     * @param data data to process
+     * @param key array of bytes to XOR with
+     * @return processed data
+     */
     static std::string process_xor_many(std::string data, std::string key);
+
+    /**
+     * Performs a circular left rotation shift for a given buffer by a given amount of bits,
+     * using groups of 1 bytes each time. Right circular rotation should be performed
+     * using this procedure with corrected amount.
+     * @param data source data to process
+     * @param amount number of bits to shift by
+     * @return copy of source array with requested shift applied
+     */
     static std::string process_rotate_left(std::string data, int amount);
 
     //@}
