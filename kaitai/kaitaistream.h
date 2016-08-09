@@ -9,17 +9,20 @@
 namespace kaitai {
 
 /**
- * Kaitai Stream class (kstream) is a wrapper over generic STL std::istream
- * that implements Kaitai Stream API for C++/STL. It provides a wide variety
- * of simple methods to read (parse) binary representations of primitive types,
- * such as integer and floating point numbers, byte arrays and strings, and
- * also provides stream positioning / navigation methods with unified
- * cross-language and cross-toolkit semantics.
+ * Kaitai Stream class (kaitai::kstream) is an implementation of
+ * <a href="https://github.com/kaitai-io/kaitai_struct/wiki/Kaitai-Struct-stream-API">Kaitai Struct stream API</a>
+ * for C++/STL. It's implemented as a wrapper over generic STL std::istream.
+ *
+ * It provides a wide variety of simple methods to read (parse) binary
+ * representations of primitive types, such as integer and floating
+ * point numbers, byte arrays and strings, and also provides stream
+ * positioning / navigation methods with unified cross-language and
+ * cross-toolkit semantics.
  *
  * Typically, end users won't access Kaitai Stream class manually, but would
  * describe a binary structure format using .ksy language and then would use
  * Kaitai Struct compiler to generate source code in desired target language.
- * This code, in turn, would use this class and API to do the actual parsing
+ * That code, in turn, would use this class and API to do the actual parsing
  * job.
  */
 class kstream {
