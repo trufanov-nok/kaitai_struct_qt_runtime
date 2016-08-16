@@ -245,6 +245,10 @@ double kaitai::kstream::read_f8le() {
 // Strings
 // ========================================================================
 
+std::string kaitai::kstream::read_str_eos() {
+    return read_bytes_full();
+}
+
 std::string kaitai::kstream::read_str_byte_limit(ssize_t len) {
     std::vector<char> result(len);
     m_io->read(&result[0], len);
