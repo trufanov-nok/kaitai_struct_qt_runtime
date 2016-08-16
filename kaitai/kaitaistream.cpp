@@ -10,6 +10,10 @@ kaitai::kstream::kstream(std::istream* io) {
     m_io = io;
 }
 
+kaitai::kstream::kstream(std::string& data): m_io_str(data) {
+    m_io = &m_io_str;
+}
+
 void kaitai::kstream::close() {
     //  m_io->close();
 }

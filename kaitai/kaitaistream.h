@@ -3,6 +3,7 @@
 
 #include <istream>
 #include <fstream>
+#include <sstream>
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -195,6 +196,7 @@ public:
 
 private:
     std::istream* m_io;
+    std::istringstream m_io_str;
 };
 
 }
