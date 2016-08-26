@@ -26,6 +26,7 @@ bool kaitai::kstream::is_eof() const {
     char t;
     m_io->get(t);
     if (m_io->eof()) {
+        m_io->clear();
         return true;
     } else {
         m_io->unget();
