@@ -8,14 +8,24 @@
 
 kaitai::kstream::kstream(std::istream* io) {
     m_io = io;
+    exceptions_enable();
 }
 
 kaitai::kstream::kstream(std::string& data): m_io_str(data) {
     m_io = &m_io_str;
+    exceptions_enable();
 }
 
 void kaitai::kstream::close() {
     //  m_io->close();
+}
+
+void kaitai::kstream::exceptions_enable() const {
+    m_io->exceptions(
+        std::istream::eofbit |
+        std::istream::failbit |
+        std::istream::badbit
+    );
 }
 
 // ========================================================================
@@ -24,12 +34,17 @@ void kaitai::kstream::close() {
 
 bool kaitai::kstream::is_eof() const {
     char t;
+    m_io->exceptions(
+        std::istream::badbit
+    );
     m_io->get(t);
     if (m_io->eof()) {
         m_io->clear();
+        exceptions_enable();
         return true;
     } else {
         m_io->unget();
+        exceptions_enable();
         return false;
     }
 }

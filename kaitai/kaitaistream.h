@@ -197,6 +197,8 @@ public:
 private:
     std::istream* m_io;
     std::istringstream m_io_str;
+
+    void exceptions_enable() const;
 };
 
 }
