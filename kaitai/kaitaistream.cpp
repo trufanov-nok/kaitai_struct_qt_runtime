@@ -270,9 +270,7 @@ std::string kaitai::kstream::read_str_eos() {
 }
 
 std::string kaitai::kstream::read_str_byte_limit(ssize_t len) {
-    std::vector<char> result(len);
-    m_io->read(&result[0], len);
-    return std::string(&result[0], &result[len]);
+    return read_bytes(len);
 }
 
 std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bool eos_error) {
@@ -298,7 +296,9 @@ std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bo
 // ========================================================================
 
 std::string kaitai::kstream::read_bytes(ssize_t len) {
-    return read_str_byte_limit(len);
+    std::vector<char> result(len);
+    m_io->read(&result[0], len);
+    return std::string(&result[0], &result[len]);
 }
 
 std::string kaitai::kstream::read_bytes_full() {
