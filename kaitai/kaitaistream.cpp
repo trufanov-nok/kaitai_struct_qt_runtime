@@ -276,21 +276,21 @@ std::string kaitai::kstream::read_str_byte_limit(ssize_t len) {
 }
 
 std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bool eos_error) {
-  std::string result;
-  std::getline(*m_io, result, term);
-  if (m_io->eof()) {
-    // encountered EOF
-    if (eos_error) {
-      // throw exception here
+    std::string result;
+    std::getline(*m_io, result, term);
+    if (m_io->eof()) {
+        // encountered EOF
+        if (eos_error) {
+            // throw exception here
+        }
+    } else {
+        // encountered terminator
+        if (include)
+            result.push_back(term);
+        if (!consume)
+            m_io->unget();
     }
-  } else {
-    // encountered terminator
-    if (include)
-      result.push_back(term);
-    if (!consume)
-      m_io->unget();
-  }
-  return result;
+    return result;
 }
 
 // ========================================================================
