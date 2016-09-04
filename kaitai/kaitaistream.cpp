@@ -387,6 +387,7 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
 
 #include <iconv.h>
 #include <cerrno>
+#include <stdexcept>
 
 std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_enc) {
     iconv_t cd = iconv_open(KS_STR_DEFAULT_ENCODING, src_enc);
