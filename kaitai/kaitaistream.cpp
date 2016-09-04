@@ -265,15 +265,15 @@ double kaitai::kstream::read_f8le() {
 // Strings
 // ========================================================================
 
-std::string kaitai::kstream::read_str_eos() {
-    return read_bytes_full();
+std::string kaitai::kstream::read_str_eos(const char *enc) {
+    return bytes_to_string(read_bytes_full(), enc);
 }
 
-std::string kaitai::kstream::read_str_byte_limit(ssize_t len) {
-    return read_bytes(len);
+std::string kaitai::kstream::read_str_byte_limit(ssize_t len, const char *enc) {
+    return bytes_to_string(read_bytes(len), enc);
 }
 
-std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bool eos_error) {
+std::string kaitai::kstream::read_strz(const char *enc, char term, bool include, bool consume, bool eos_error) {
     std::string result;
     std::getline(*m_io, result, term);
     if (m_io->eof()) {
@@ -288,7 +288,7 @@ std::string kaitai::kstream::read_strz(char term, bool include, bool consume, bo
         if (!consume)
             m_io->unget();
     }
-    return result;
+    return bytes_to_string(result, enc);
 }
 
 // ========================================================================
@@ -319,7 +319,7 @@ std::string kaitai::kstream::read_bytes_full() {
 }
 
 std::string kaitai::kstream::ensure_fixed_contents(ssize_t len, const char *expectedChar) {
-    std::string actual = read_str_byte_limit(len);
+    std::string actual = read_bytes(len);
     std::string expected(expectedChar);
 
     if (actual != expected) {
@@ -372,3 +372,71 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
 
     return result;
 }
+
+// ========================================================================
+// Other internal methods
+// ========================================================================
+
+#define KS_STR_ENCODING_ICONV
+
+#ifndef KS_STR_DEFAULT_ENCODING
+#define KS_STR_DEFAULT_ENCODING "UTF-8"
+#endif
+
+#ifdef KS_STR_ENCODING_ICONV
+
+#include <iconv.h>
+#include <cerrno>
+
+std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_enc) {
+    iconv_t cd = iconv_open(KS_STR_DEFAULT_ENCODING, src_enc);
+
+    if (cd == (iconv_t) -1) {
+        if (errno == EINVAL) {
+            throw new std::runtime_error("invalid encoding pair conversion requested");
+        } else {
+            throw new std::runtime_error("error opening iconv");
+        }
+    }
+
+    size_t src_len = src.length();
+    size_t src_left = src_len;
+
+    // Start with a buffer length of double the source length.
+    size_t dst_len = src_len * 2;
+    std::string dst(dst_len, ' ');
+    size_t dst_left = dst_len;
+
+    char *src_ptr = &src[0];
+    char *dst_ptr = &dst[0];
+
+    while (true) {
+        size_t res = iconv(cd, &src_ptr, &src_left, &dst_ptr, &dst_left);
+
+        if (res == (size_t) -1) {
+            if (errno == E2BIG) {
+                // dst buffer is not enough to accomodate whole string
+                // enlarge the buffer and try again
+                dst_left += dst_len;
+                dst_len *= 2;
+                dst.resize(dst_len);
+            } else {
+                throw new std::runtime_error("iconv error");
+            }
+        } else {
+            // conversion successful
+            dst.resize(dst_len - dst_left);
+            break;
+        }
+    }
+
+    if (iconv_close(cd) != 0)
+        throw new std::runtime_error("iconv close error");
+
+    return dst;
+}
+#else
+std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_enc) {
+    return src;
+}
+#endif

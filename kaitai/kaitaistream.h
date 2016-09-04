@@ -145,9 +145,9 @@ public:
     /** @name Strings */
     //@{
 
-    std::string read_str_eos();
-    std::string read_str_byte_limit(ssize_t len);
-    std::string read_strz(char term, bool include, bool consume, bool eos_error);
+    std::string read_str_eos(const char *enc);
+    std::string read_str_byte_limit(ssize_t len, const char *enc);
+    std::string read_strz(const char *enc, char term, bool include, bool consume, bool eos_error);
 
     //@}
 
@@ -193,6 +193,8 @@ public:
     static std::string process_rotate_left(std::string data, int amount);
 
     //@}
+
+    static std::string bytes_to_string(std::string src, const char *src_enc);
 
 private:
     std::istream* m_io;
