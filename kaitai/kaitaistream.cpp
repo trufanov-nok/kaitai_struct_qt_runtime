@@ -418,9 +418,15 @@ std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_en
             if (errno == E2BIG) {
                 // dst buffer is not enough to accomodate whole string
                 // enlarge the buffer and try again
+                size_t dst_used = dst_len - dst_left;
                 dst_left += dst_len;
-                dst_len *= 2;
+                dst_len += dst_len;
                 dst.resize(dst_len);
+
+                // dst.resize might have allocated destination buffer in another area
+                // of memory, thus our previous pointer "dst" will be invalid; re-point
+                // it using "dst_used".
+                dst_ptr = &dst[dst_used];
             } else {
                 throw new std::runtime_error("iconv error");
             }
