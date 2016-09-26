@@ -377,6 +377,7 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
 
 #ifdef KS_ZLIB
 #include <zlib.h>
+#include <stdexcept>
 
 std::string kaitai::kstream::process_zlib(std::string data) {
     int ret;
@@ -413,7 +414,7 @@ std::string kaitai::kstream::process_zlib(std::string data) {
     if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
         std::ostringstream exc_msg;
         exc_msg << "zlib: error #" << ret << "): " << strm.msg;
-        throw(std::runtime_error(exc_msg.str()));
+        throw new std::runtime_error(exc_msg.str());
     }
 
     if (inflateEnd(&strm) != Z_OK)
