@@ -192,6 +192,14 @@ public:
      */
     static std::string process_rotate_left(std::string data, int amount);
 
+    /**
+     * Performs an unpacking ("inflation") of zlib-compressed data with usual zlib headers.
+     * @param data data to unpack
+     * @return unpacked data
+     * @throws IOException
+     */
+    static std::string process_zlib(std::string data);
+
     //@}
 
     static std::string bytes_to_string(std::string src, const char *src_enc);
@@ -201,6 +209,8 @@ private:
     std::istringstream m_io_str;
 
     void exceptions_enable() const;
+
+    static const int ZLIB_BUF_SIZE = 128 * 1024;
 };
 
 }
