@@ -204,6 +204,13 @@ public:
 
     static std::string bytes_to_string(std::string src, const char *src_enc);
 
+    /**
+     * Performs modulo operation between two integers: dividend `a`
+     * and divisor `b`. Divisor `b` is expected to be positive. The
+     * result is always 0 <= x <= b - 1.
+     */
+    static int mod(int a, int b);
+
 private:
     std::istream* m_io;
     std::istringstream m_io_str;

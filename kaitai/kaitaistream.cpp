@@ -425,6 +425,19 @@ std::string kaitai::kstream::process_zlib(std::string data) {
 #endif
 
 // ========================================================================
+// Misc utility methods
+// ========================================================================
+
+int kaitai::kstream::mod(int a, int b) {
+    if (b <= 0)
+        throw new std::invalid_argument("mod divisor <= 0");
+    int r = a % b;
+    if (r < 0)
+        r += b;
+    return r;
+}
+
+// ========================================================================
 // Other internal methods
 // ========================================================================
 
