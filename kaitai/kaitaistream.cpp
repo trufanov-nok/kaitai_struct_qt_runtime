@@ -318,9 +318,8 @@ std::string kaitai::kstream::read_bytes_full() {
     return result;
 }
 
-std::string kaitai::kstream::ensure_fixed_contents(ssize_t len, const char *expectedChar) {
-    std::string actual = read_bytes(len);
-    std::string expected(expectedChar);
+std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
+    std::string actual = read_bytes(expected.length());
 
     if (actual != expected) {
         std::cout << "Fixed contents mismatch!\n";

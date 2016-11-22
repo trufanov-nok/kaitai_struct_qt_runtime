@@ -156,7 +156,7 @@ public:
 
     std::string read_bytes(ssize_t len);
     std::string read_bytes_full();
-    std::string ensure_fixed_contents(ssize_t len, const char* expected);
+    std::string ensure_fixed_contents(std::string expected);
 
     //@}
 
