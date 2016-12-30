@@ -298,7 +298,7 @@ std::string kaitai::kstream::read_strz(const char *enc, char term, bool include,
 std::string kaitai::kstream::read_bytes(ssize_t len) {
     std::vector<char> result(len);
     m_io->read(&result[0], len);
-    return std::string(&result[0], &result[len]);
+    return std::string(result.begin(), result.end());
 }
 
 std::string kaitai::kstream::read_bytes_full() {
