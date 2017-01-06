@@ -142,6 +142,13 @@ public:
 
     //@}
 
+    /** @name Unaligned bit values */
+    //@{
+
+    uint64_t read_bits_int(int n);
+
+    //@}
+
     /** @name Strings */
     //@{
 
@@ -214,7 +221,10 @@ public:
 private:
     std::istream* m_io;
     std::istringstream m_io_str;
+    int m_bits_left;
+    uint64_t m_bits;
 
+    void init();
     void exceptions_enable() const;
 
     static const int ZLIB_BUF_SIZE = 128 * 1024;

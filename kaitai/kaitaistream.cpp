@@ -8,12 +8,18 @@
 
 kaitai::kstream::kstream(std::istream* io) {
     m_io = io;
-    exceptions_enable();
+    init();
 }
 
 kaitai::kstream::kstream(std::string& data): m_io_str(data) {
     m_io = &m_io_str;
+    init();
+}
+
+void kaitai::kstream::init() {
     exceptions_enable();
+    m_bits_left = 0;
+    m_bits = 0;
 }
 
 void kaitai::kstream::close() {
@@ -259,6 +265,45 @@ double kaitai::kstream::read_f8le() {
     t = bswap_64(t);
 #endif
     return reinterpret_cast<double&>(t);
+}
+
+// ========================================================================
+// Unaligned bit values
+// ========================================================================
+
+uint64_t kaitai::kstream::read_bits_int(int n) {
+    int bits_needed = n - m_bits_left;
+    if (bits_needed > 0) {
+        // 1 bit  => 1 byte
+        // 8 bits => 1 byte
+        // 9 bits => 2 bytes
+        int bytes_needed = ((bits_needed - 1) / 8) + 1;
+        if (bytes_needed > 8) {
+            throw new std::runtime_error("read_bits_int: more than 8 bytes requested");
+        }
+        char buf[8];
+        m_io->read(buf, bytes_needed);
+        for (int i = 0; i < bytes_needed; i++) {
+            uint8_t b = buf[i];
+            m_bits <<= 8;
+            m_bits |= b;
+            m_bits_left += 8;
+        }
+    }
+
+    // raw mask with required number of 1s, starting from lowest bit
+    uint64_t mask = (1 << n) - 1;
+    // shift mask to align with highest bits available in @bits
+    int shift_bits = m_bits_left - n;
+    mask <<= shift_bits;
+    // derive reading result
+    uint64_t res = (m_bits & mask) >> shift_bits;
+    // clear top bits that we've just read => AND with 1s
+    m_bits_left -= n;
+    mask = (1 << m_bits_left) - 1;
+    m_bits &= mask;
+
+    return res;
 }
 
 // ========================================================================
