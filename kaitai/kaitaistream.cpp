@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 
 kaitai::kstream::kstream(std::istream* io) {
     m_io = io;
@@ -420,7 +421,6 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
 
 #ifdef KS_ZLIB
 #include <zlib.h>
-#include <stdexcept>
 
 std::string kaitai::kstream::process_zlib(std::string data) {
     int ret;
