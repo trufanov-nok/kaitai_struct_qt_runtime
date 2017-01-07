@@ -278,9 +278,8 @@ uint64_t kaitai::kstream::read_bits_int(int n) {
         // 8 bits => 1 byte
         // 9 bits => 2 bytes
         int bytes_needed = ((bits_needed - 1) / 8) + 1;
-        if (bytes_needed > 8) {
-            throw new std::runtime_error("read_bits_int: more than 8 bytes requested");
-        }
+        if (bytes_needed > 8)
+            throw std::runtime_error("read_bits_int: more than 8 bytes requested");
         char buf[8];
         m_io->read(buf, bytes_needed);
         for (int i = 0; i < bytes_needed; i++) {
@@ -436,7 +435,7 @@ std::string kaitai::kstream::process_zlib(std::string data) {
 
     ret = inflateInit(&strm);
     if (ret != Z_OK)
-        throw new std::runtime_error("zlib: inflateInit error");
+        throw std::runtime_error("zlib: inflateInit error");
 
     strm.next_in = src_ptr;
     strm.avail_in = data.length();
@@ -458,11 +457,11 @@ std::string kaitai::kstream::process_zlib(std::string data) {
     if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
         std::ostringstream exc_msg;
         exc_msg << "zlib: error #" << ret << "): " << strm.msg;
-        throw new std::runtime_error(exc_msg.str());
+        throw std::runtime_error(exc_msg.str());
     }
 
     if (inflateEnd(&strm) != Z_OK)
-        throw new std::runtime_error("zlib: inflateEnd error");
+        throw std::runtime_error("zlib: inflateEnd error");
 
     return outstring;
 }
@@ -502,9 +501,9 @@ std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_en
 
     if (cd == (iconv_t) -1) {
         if (errno == EINVAL) {
-            throw new std::runtime_error("invalid encoding pair conversion requested");
+            throw std::runtime_error("invalid encoding pair conversion requested");
         } else {
-            throw new std::runtime_error("error opening iconv");
+            throw std::runtime_error("error opening iconv");
         }
     }
 
@@ -536,7 +535,7 @@ std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_en
                 // it using "dst_used".
                 dst_ptr = &dst[dst_used];
             } else {
-                throw new std::runtime_error("iconv error");
+                throw std::runtime_error("iconv error");
             }
         } else {
             // conversion successful
@@ -546,7 +545,7 @@ std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_en
     }
 
     if (iconv_close(cd) != 0)
-        throw new std::runtime_error("iconv close error");
+        throw std::runtime_error("iconv close error");
 
     return dst;
 }
