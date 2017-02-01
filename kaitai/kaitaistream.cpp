@@ -19,8 +19,7 @@ kaitai::kstream::kstream(std::string& data): m_io_str(data) {
 
 void kaitai::kstream::init() {
     exceptions_enable();
-    m_bits_left = 0;
-    m_bits = 0;
+    align_to_byte();
 }
 
 void kaitai::kstream::close() {
@@ -271,6 +270,11 @@ double kaitai::kstream::read_f8le() {
 // ========================================================================
 // Unaligned bit values
 // ========================================================================
+
+void kaitai::kstream::align_to_byte() {
+    m_bits_left = 0;
+    m_bits = 0;
+}
 
 uint64_t kaitai::kstream::read_bits_int(int n) {
     int bits_needed = n - m_bits_left;
