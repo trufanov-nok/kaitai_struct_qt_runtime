@@ -219,6 +219,13 @@ public:
      */
     static int mod(int a, int b);
 
+    /**
+     * Converts given integer `val` to a decimal string representation.
+     * Should be used in place of std::to_string() (which is available only
+     * since C++11) in older C++ implementations.
+     */
+    static std::string to_string(int val);
+
 private:
     std::istream* m_io;
     std::istringstream m_io_str;
