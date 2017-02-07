@@ -501,6 +501,13 @@ std::string kaitai::kstream::to_string(int val) {
     return ret;
 }
 
+#include <algorithm>
+std::string kaitai::kstream::reverse(std::string val) {
+    std::reverse(val.begin(), val.end());
+
+    return val;
+}
+
 // ========================================================================
 // Other internal methods
 // ========================================================================
