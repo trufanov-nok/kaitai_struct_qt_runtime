@@ -226,6 +226,13 @@ public:
      */
     static std::string to_string(int val);
 
+    /**
+     * Reverses given string `val`, so that the first character becomes the
+     * last and the last one becomes the first. This should be used to avoid
+     * the need of local variables at the caller.
+     */
+    static std::string reverse(std::string val);
+
 private:
     std::istream* m_io;
     std::istringstream m_io_str;
