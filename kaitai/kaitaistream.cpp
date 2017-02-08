@@ -477,7 +477,7 @@ std::string kaitai::kstream::process_zlib(std::string data) {
 
 int kaitai::kstream::mod(int a, int b) {
     if (b <= 0)
-        throw new std::invalid_argument("mod divisor <= 0");
+        throw std::invalid_argument("mod divisor <= 0");
     int r = a % b;
     if (r < 0)
         r += b;
@@ -495,7 +495,7 @@ std::string kaitai::kstream::to_string(int val) {
 
     // should never happen, but check nonetheless
     if (got_len > sizeof(buf))
-        throw new std::invalid_argument("integer is longer than string buffer");
+        throw std::invalid_argument("integer is longer than string buffer");
 
     std::string ret(buf);
     return ret;
