@@ -497,8 +497,7 @@ std::string kaitai::kstream::to_string(int val) {
     if (got_len > sizeof(buf))
         throw std::invalid_argument("integer is longer than string buffer");
 
-    std::string ret(buf);
-    return ret;
+    return std::string(buf);
 }
 
 #include <algorithm>
