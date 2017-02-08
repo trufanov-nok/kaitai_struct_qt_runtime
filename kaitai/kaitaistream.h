@@ -1,6 +1,9 @@
 #ifndef KAITAI_STREAM_H
 #define KAITAI_STREAM_H
 
+// Kaitai Struct runtime API version: x.y.z = 'xxxyyyzzz' decimal
+#define KAITAI_STRUCT_VERSION 7000
+
 #include <istream>
 #include <fstream>
 #include <sstream>
