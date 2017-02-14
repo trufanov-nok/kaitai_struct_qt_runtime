@@ -2,7 +2,7 @@
 #define KAITAI_STREAM_H
 
 // Kaitai Struct runtime API version: x.y.z = 'xxxyyyzzz' decimal
-#define KAITAI_STRUCT_VERSION 7000
+#define KAITAI_STRUCT_VERSION 7000L
 
 #include <istream>
 #include <fstream>
@@ -153,20 +153,12 @@ public:
 
     //@}
 
-    /** @name Strings */
-    //@{
-
-    std::string read_str_eos(const char *enc);
-    std::string read_str_byte_limit(ssize_t len, const char *enc);
-    std::string read_strz(const char *enc, char term, bool include, bool consume, bool eos_error);
-
-    //@}
-
     /** @name Byte arrays */
     //@{
 
     std::string read_bytes(ssize_t len);
     std::string read_bytes_full();
+    std::string read_bytes_term(char term, bool include, bool consume, bool eos_error);
     std::string ensure_fixed_contents(std::string expected);
 
     //@}
@@ -213,7 +205,7 @@ public:
 
     //@}
 
-    static std::string bytes_to_string(std::string src, const char *src_enc);
+    static std::string bytes_to_str(std::string src, std::string src_enc);
 
     /**
      * Performs modulo operation between two integers: dividend `a`

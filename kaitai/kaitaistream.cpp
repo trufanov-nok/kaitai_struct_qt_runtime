@@ -311,36 +311,6 @@ uint64_t kaitai::kstream::read_bits_int(int n) {
 }
 
 // ========================================================================
-// Strings
-// ========================================================================
-
-std::string kaitai::kstream::read_str_eos(const char *enc) {
-    return bytes_to_string(read_bytes_full(), enc);
-}
-
-std::string kaitai::kstream::read_str_byte_limit(ssize_t len, const char *enc) {
-    return bytes_to_string(read_bytes(len), enc);
-}
-
-std::string kaitai::kstream::read_strz(const char *enc, char term, bool include, bool consume, bool eos_error) {
-    std::string result;
-    std::getline(*m_io, result, term);
-    if (m_io->eof()) {
-        // encountered EOF
-        if (eos_error) {
-            // throw exception here
-        }
-    } else {
-        // encountered terminator
-        if (include)
-            result.push_back(term);
-        if (!consume)
-            m_io->unget();
-    }
-    return bytes_to_string(result, enc);
-}
-
-// ========================================================================
 // Byte arrays
 // ========================================================================
 
@@ -364,6 +334,24 @@ std::string kaitai::kstream::read_bytes_full() {
     m_io->seekg(p1);
     m_io->read(&result[0], len);
 
+    return result;
+}
+
+std::string kaitai::kstream::read_bytes_term(char term, bool include, bool consume, bool eos_error) {
+    std::string result;
+    std::getline(*m_io, result, term);
+    if (m_io->eof()) {
+        // encountered EOF
+        if (eos_error) {
+            // throw exception here
+        }
+    } else {
+        // encountered terminator
+        if (include)
+            result.push_back(term);
+        if (!consume)
+            m_io->unget();
+    }
     return result;
 }
 
@@ -523,8 +511,8 @@ std::string kaitai::kstream::reverse(std::string val) {
 #include <cerrno>
 #include <stdexcept>
 
-std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_enc) {
-    iconv_t cd = iconv_open(KS_STR_DEFAULT_ENCODING, src_enc);
+std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) {
+    iconv_t cd = iconv_open(KS_STR_DEFAULT_ENCODING, src_enc.c_str());
 
     if (cd == (iconv_t) -1) {
         if (errno == EINVAL) {
@@ -577,7 +565,7 @@ std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_en
     return dst;
 }
 #else
-std::string kaitai::kstream::bytes_to_string(std::string src, const char *src_enc) {
+std::string kaitai::kstream::bytes_to_str(std::string src, const char *src_enc) {
     return src;
 }
 #endif
