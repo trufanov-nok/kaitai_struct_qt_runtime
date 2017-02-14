@@ -367,6 +367,28 @@ std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
     return actual;
 }
 
+std::string kaitai::kstream::bytes_strip_right(std::string src, char pad_byte) {
+    std::size_t new_len = src.length();
+
+    while (src[new_len - 1] == pad_byte)
+        new_len--;
+
+    return src.substr(0, new_len);
+}
+
+std::string kaitai::kstream::bytes_terminate(std::string src, char term, bool include) {
+    std::size_t new_len = 0;
+    std::size_t max_len = src.length();
+
+    while (new_len < max_len && src[new_len] != term)
+        new_len++;
+
+    if (include && new_len < max_len)
+        new_len++;
+
+    return src.substr(0, new_len);
+}
+
 // ========================================================================
 // Byte array processing
 // ========================================================================

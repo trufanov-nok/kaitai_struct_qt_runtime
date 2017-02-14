@@ -161,6 +161,10 @@ public:
     std::string read_bytes_term(char term, bool include, bool consume, bool eos_error);
     std::string ensure_fixed_contents(std::string expected);
 
+    static std::string bytes_strip_right(std::string src, char pad_byte);
+    static std::string bytes_terminate(std::string src, char term, bool include);
+    static std::string bytes_to_str(std::string src, std::string src_enc);
+
     //@}
 
     /** @name Byte array processing */
@@ -204,8 +208,6 @@ public:
     static std::string process_zlib(std::string data);
 
     //@}
-
-    static std::string bytes_to_str(std::string src, std::string src_enc);
 
     /**
      * Performs modulo operation between two integers: dividend `a`
