@@ -239,6 +239,8 @@ private:
     void init();
     void exceptions_enable() const;
 
+    static uint64_t get_mask_ones(int n);
+
     static const int ZLIB_BUF_SIZE = 128 * 1024;
 };
 
