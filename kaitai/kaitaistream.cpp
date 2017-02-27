@@ -296,7 +296,8 @@ uint64_t kaitai::kstream::read_bits_int(int n) {
     }
 
     // raw mask with required number of 1s, starting from lowest bit
-    uint64_t mask = (1 << n) - 1;
+    uint64_t mask = ((uint64_t)1 << n) - 1;
+    if (n==64) {mask = 0xFFFFFFFFFFFFFFFF;}
     // shift mask to align with highest bits available in @bits
     int shift_bits = m_bits_left - n;
     mask <<= shift_bits;
@@ -304,7 +305,8 @@ uint64_t kaitai::kstream::read_bits_int(int n) {
     uint64_t res = (m_bits & mask) >> shift_bits;
     // clear top bits that we've just read => AND with 1s
     m_bits_left -= n;
-    mask = (1 << m_bits_left) - 1;
+    if (m_bits_left==64) {mask = 0xFFFFFFFFFFFFFFFF;}
+    else {mask = ((uint64_t)1 << m_bits_left) - 1;}
     m_bits &= mask;
 
     return res;
