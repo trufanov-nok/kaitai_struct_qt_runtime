@@ -55,15 +55,15 @@ bool kaitai::kstream::is_eof() const {
     }
 }
 
-void kaitai::kstream::seek(std::ifstream::pos_type pos) {
+void kaitai::kstream::seek(uint64_t pos) {
     m_io->seekg(pos);
 }
 
-std::ifstream::pos_type kaitai::kstream::pos() {
+uint64_t kaitai::kstream::pos() {
     return m_io->tellg();
 }
 
-std::ifstream::pos_type kaitai::kstream::size() {
+uint64_t kaitai::kstream::size() {
     std::ifstream::pos_type cur_pos = m_io->tellg();
     m_io->seekg(0, std::ios::end);
     std::ifstream::pos_type len = m_io->tellg();

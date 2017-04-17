@@ -62,19 +62,19 @@ public:
      * Set stream pointer to designated position.
      * \param pos new position (offset in bytes from the beginning of the stream)
      */
-    void seek(std::ifstream::pos_type pos);
+    void seek(uint64_t pos);
 
     /**
      * Get current position of a stream pointer.
      * \return pointer position, number of bytes from the beginning of the stream
      */
-    std::ifstream::pos_type pos();
+    uint64_t pos();
 
     /**
      * Get total size of the stream in bytes.
      * \return size of the stream in bytes
      */
-    std::ifstream::pos_type size();
+    uint64_t size();
     //@}
 
     /** @name Integer numbers */
