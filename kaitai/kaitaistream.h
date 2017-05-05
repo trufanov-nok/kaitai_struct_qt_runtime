@@ -5,7 +5,6 @@
 #define KAITAI_STRUCT_VERSION 7000L
 
 #include <istream>
-#include <fstream>
 #include <sstream>
 #include <stdint.h>
 #include <sys/types.h>

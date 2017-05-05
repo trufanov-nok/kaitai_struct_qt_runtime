@@ -64,9 +64,9 @@ uint64_t kaitai::kstream::pos() {
 }
 
 uint64_t kaitai::kstream::size() {
-    std::ifstream::pos_type cur_pos = m_io->tellg();
+    std::iostream::pos_type cur_pos = m_io->tellg();
     m_io->seekg(0, std::ios::end);
-    std::ifstream::pos_type len = m_io->tellg();
+    std::iostream::pos_type len = m_io->tellg();
     m_io->seekg(cur_pos);
     return len;
 }
@@ -329,9 +329,9 @@ std::string kaitai::kstream::read_bytes(ssize_t len) {
 }
 
 std::string kaitai::kstream::read_bytes_full() {
-    std::ifstream::pos_type p1 = m_io->tellg();
+    std::iostream::pos_type p1 = m_io->tellg();
     m_io->seekg(0, std::ios::end);
-    std::ifstream::pos_type p2 = m_io->tellg();
+    std::iostream::pos_type p2 = m_io->tellg();
     size_t len = p2 - p1;
 
     // Note: this requires a std::string to be backed with a
