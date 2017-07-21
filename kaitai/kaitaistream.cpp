@@ -378,7 +378,7 @@ std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
 std::string kaitai::kstream::bytes_strip_right(std::string src, char pad_byte) {
     std::size_t new_len = src.length();
 
-    while (src[new_len - 1] == pad_byte)
+    while (new_len > 0 && src[new_len - 1] == pad_byte)
         new_len--;
 
     return src.substr(0, new_len);
