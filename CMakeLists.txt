@@ -14,6 +14,10 @@ set (SOURCES
 
 add_library (${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 
+if (APPLE)
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} z iconv)
+endif()
+
 install (TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION lib
 )
