@@ -155,7 +155,7 @@ public:
     /** @name Byte arrays */
     //@{
 
-    std::string read_bytes(ssize_t len);
+    std::string read_bytes(std::streamsize len);
     std::string read_bytes_full();
     std::string read_bytes_term(char term, bool include, bool consume, bool eos_error);
     std::string ensure_fixed_contents(std::string expected);

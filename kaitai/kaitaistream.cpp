@@ -9,7 +9,15 @@
 #define __BYTE_ORDER    BYTE_ORDER
 #define __BIG_ENDIAN    BIG_ENDIAN
 #define __LITTLE_ENDIAN LITTLE_ENDIAN
-#else // !__APPLE__
+#elif defined(_MSC_VER) // !__APPLE__
+#include <stdlib.h>
+#define __LITTLE_ENDIAN     1234
+#define __BIG_ENDIAN        4321
+#define __BYTE_ORDER        __LITTLE_ENDIAN
+#define bswap_16(x) _byteswap_ushort(x)
+#define bswap_32(x) _byteswap_ulong(x)
+#define bswap_64(x) _byteswap_uint64(x)
+#else // !__APPLE__ or !_MSC_VER
 #include <endian.h>
 #include <byteswap.h>
 #endif
@@ -333,7 +341,7 @@ uint64_t kaitai::kstream::get_mask_ones(int n) {
 // Byte arrays
 // ========================================================================
 
-std::string kaitai::kstream::read_bytes(ssize_t len) {
+std::string kaitai::kstream::read_bytes(std::streamsize len) {
     std::vector<char> result(len);
     m_io->read(&result[0], len);
     return std::string(result.begin(), result.end());
@@ -450,8 +458,6 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
     return result;
 }
 
-#define KS_ZLIB
-
 #ifdef KS_ZLIB
 #include <zlib.h>
 
@@ -540,8 +546,6 @@ std::string kaitai::kstream::reverse(std::string val) {
 // Other internal methods
 // ========================================================================
 
-#define KS_STR_ENCODING_ICONV
-
 #ifndef KS_STR_DEFAULT_ENCODING
 #define KS_STR_DEFAULT_ENCODING "UTF-8"
 #endif
@@ -606,7 +610,7 @@ std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) 
     return dst;
 }
 #else
-std::string kaitai::kstream::bytes_to_str(std::string src, const char *src_enc) {
+std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) {
     return src;
 }
 #endif
