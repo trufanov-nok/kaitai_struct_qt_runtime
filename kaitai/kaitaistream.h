@@ -198,6 +198,7 @@ public:
      */
     static std::string process_rotate_left(std::string data, int amount);
 
+#ifdef KS_ZLIB
     /**
      * Performs an unpacking ("inflation") of zlib-compressed data with usual zlib headers.
      * @param data data to unpack
@@ -205,6 +206,7 @@ public:
      * @throws IOException
      */
     static std::string process_zlib(std::string data);
+#endif
 
     //@}
 
