@@ -609,8 +609,10 @@ std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) 
 
     return dst;
 }
-#else
+#elif defined(KS_STR_ENCODING_NONE)
 std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) {
     return src;
 }
+#else
+#error Need to decide how to handle strings: please define one of: KS_STR_ENCODING_ICONV, KS_STR_ENCODING_NONE
 #endif
