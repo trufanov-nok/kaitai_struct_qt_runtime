@@ -24,6 +24,8 @@ set (SOURCES
     kaitai/kaitaistream.cpp
 )
 
+set(STRING_ENCODING_TYPE "ICONV" CACHE STRING "Set the way strings have to be encoded (ICONV|NONE|...)")
+
 add_library (${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 
 if (ZLIB_FOUND)
@@ -35,7 +37,14 @@ endif()
 if(ICONV_FOUND)
     target_include_directories(${PROJECT_NAME} PRIVATE ${ICONV_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${ICONV_LIBRARIES})
+endif()
+
+if (STRING_ENCODING_TYPE STREQUAL "ICONV")
     target_compile_definitions(${PROJECT_NAME} PRIVATE -DKS_STR_ENCODING_ICONV)
+elseif (STRING_ENCODING_TYPE STREQUAL "NONE")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DKS_STR_ENCODING_NONE)
+else()
+    # User action requested
 endif()
 
 if (WIN32)
