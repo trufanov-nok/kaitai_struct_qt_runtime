@@ -344,6 +344,12 @@ uint64_t kaitai::kstream::get_mask_ones(int n) {
 std::string kaitai::kstream::read_bytes(std::streamsize len) {
     std::vector<char> result(len);
 
+    // NOTE: streamsize type is signed, negative values are only *supposed* to not be used.
+    // http://en.cppreference.com/w/cpp/io/streamsize
+    if (len < 0) {
+        throw std::runtime_error("read_bytes: requested a negative amount");
+    }
+
     if (len > 0 ) {
         m_io->read(&result[0], len);
     }
@@ -374,7 +380,7 @@ std::string kaitai::kstream::read_bytes_term(char term, bool include, bool consu
     if (m_io->eof()) {
         // encountered EOF
         if (eos_error) {
-            // throw exception here
+            throw std::runtime_error("read_bytes_term: encountered EOF");
         }
     } else {
         // encountered terminator
@@ -390,9 +396,8 @@ std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
     std::string actual = read_bytes(expected.length());
 
     if (actual != expected) {
-        std::cout << "Fixed contents mismatch!\n";
-        std::cout << actual << "\n";
-        std::cout << expected << "\n";
+        // NOTE: I think printing it outright is not best idea, it could contain non-ascii charactes like backspace and beeps and whatnot. It would be better to print hexlified version, and also to redirect it to stderr.
+        throw std::runtime_error("ensure_fixed_contents: actual data does not match expected data");
     }
 
     return actual;
@@ -478,7 +483,7 @@ std::string kaitai::kstream::process_zlib(std::string data) {
 
     ret = inflateInit(&strm);
     if (ret != Z_OK)
-        throw std::runtime_error("zlib: inflateInit error");
+        throw std::runtime_error("process_zlib: inflateInit error");
 
     strm.next_in = src_ptr;
     strm.avail_in = data.length();
@@ -499,12 +504,12 @@ std::string kaitai::kstream::process_zlib(std::string data) {
 
     if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
         std::ostringstream exc_msg;
-        exc_msg << "zlib: error #" << ret << "): " << strm.msg;
+        exc_msg << "process_zlib: error #" << ret << "): " << strm.msg;
         throw std::runtime_error(exc_msg.str());
     }
 
     if (inflateEnd(&strm) != Z_OK)
-        throw std::runtime_error("zlib: inflateEnd error");
+        throw std::runtime_error("process_zlib: inflateEnd error");
 
     return outstring;
 }
@@ -516,7 +521,7 @@ std::string kaitai::kstream::process_zlib(std::string data) {
 
 int kaitai::kstream::mod(int a, int b) {
     if (b <= 0)
-        throw std::invalid_argument("mod divisor <= 0");
+        throw std::invalid_argument("mod: divisor b <= 0");
     int r = a % b;
     if (r < 0)
         r += b;
@@ -534,7 +539,7 @@ std::string kaitai::kstream::to_string(int val) {
 
     // should never happen, but check nonetheless
     if (got_len > sizeof(buf))
-        throw std::invalid_argument("integer is longer than string buffer");
+        throw std::invalid_argument("to_string: integer is longer than string buffer");
 
     return std::string(buf);
 }
@@ -565,9 +570,9 @@ std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) 
 
     if (cd == (iconv_t) -1) {
         if (errno == EINVAL) {
-            throw std::runtime_error("invalid encoding pair conversion requested");
+            throw std::runtime_error("bytes_to_str: invalid encoding pair conversion requested");
         } else {
-            throw std::runtime_error("error opening iconv");
+            throw std::runtime_error("bytes_to_str: error opening iconv");
         }
     }
 
@@ -599,7 +604,7 @@ std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) 
                 // it using "dst_used".
                 dst_ptr = &dst[dst_used];
             } else {
-                throw std::runtime_error("iconv error");
+                throw std::runtime_error("bytes_to_str: iconv error");
             }
         } else {
             // conversion successful
@@ -608,8 +613,9 @@ std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) 
         }
     }
 
-    if (iconv_close(cd) != 0)
-        throw std::runtime_error("iconv close error");
+    if (iconv_close(cd) != 0) {
+        throw std::runtime_error("bytes_to_str: iconv close error");
+    }
 
     return dst;
 }
