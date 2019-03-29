@@ -58,6 +58,9 @@ void kaitai::kstream::exceptions_enable() const {
 // ========================================================================
 
 bool kaitai::kstream::is_eof() const {
+    if (m_bits_left > 0) {
+        return false;
+    }
     char t;
     m_io->exceptions(
         std::istream::badbit
@@ -350,7 +353,7 @@ std::string kaitai::kstream::read_bytes(std::streamsize len) {
         throw std::runtime_error("read_bytes: requested a negative amount");
     }
 
-    if (len > 0 ) {
+    if (len > 0) {
         m_io->read(&result[0], len);
     }
 
@@ -530,9 +533,9 @@ int kaitai::kstream::mod(int a, int b) {
 
 #include <stdio.h>
 std::string kaitai::kstream::to_string(int val) {
-    // if int is 32 bits, "-2147483648" is longest string representation
+    // if int is 32 bits, "-2147483648" is the longest string representation
     //   => 11 chars + zero => 12 chars
-    // if int is 64 bits, "-9223372036854775808" is longest
+    // if int is 64 bits, "-9223372036854775808" is the longest
     //   => 20 chars + zero => 21 chars
     char buf[25];
     int got_len = snprintf(buf, sizeof(buf), "%d", val);
