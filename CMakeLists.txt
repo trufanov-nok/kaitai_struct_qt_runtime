@@ -7,7 +7,7 @@ find_package(ZLIB)
 
 find_path(ICONV_INCLUDE_DIRS iconv.h)
 mark_as_advanced(ICONV_INCLUDE_DIRS)
-find_library(ICONV_LIBRARIES NAMES libiconv libiconv-2 c)
+find_library(ICONV_LIBRARIES NAMES libiconv libiconv-2 iconv)
 mark_as_advanced(ICONV_LIBRARIES)
 
 set(ICONV_FOUND FALSE)
@@ -27,6 +27,7 @@ set (SOURCES
 set(STRING_ENCODING_TYPE "ICONV" CACHE STRING "Set the way strings have to be encoded (ICONV|NONE|...)")
 
 add_library (${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "kaitai/kaitaistream.h;kaitai/kaitaistruct.h")
 
 if (ZLIB_FOUND)
     target_include_directories(${PROJECT_NAME} PRIVATE ${ZLIB_INCLUDE_DIRS})
@@ -53,5 +54,6 @@ if (WIN32)
 else()
     install (TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/kaitai
     )
 endif()
