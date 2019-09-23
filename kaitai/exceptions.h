@@ -4,6 +4,7 @@
 #include <kaitai/kaitaistream.h>
 
 #include <string>
+#include <stdexcept>
 
 namespace kaitai {
 
