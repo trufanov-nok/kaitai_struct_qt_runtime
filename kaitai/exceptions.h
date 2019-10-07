@@ -21,6 +21,8 @@ public:
     {
     }
 
+    virtual ~kstruct_error() noexcept {};
+
 protected:
     const std::string m_src_path;
 };
@@ -36,6 +38,8 @@ public:
         kstruct_error("unable to decide on endianness for a type", src_path)
     {
     }
+
+    virtual ~undecided_endianness_error() noexcept {};
 };
 
 /**
@@ -51,6 +55,8 @@ public:
     }
 
 // "at pos #{io.pos}: validation failed: #{msg}"
+
+    virtual ~validation_failed_error() noexcept {};
 
 protected:
     const kstream* m_io;
@@ -71,6 +77,8 @@ public:
     }
 
     // "not equal, expected #{expected.inspect}, but got #{actual.inspect}"
+
+    virtual ~validation_not_equal_error<T>() noexcept {};
 
 protected:
     const T& m_expected;
