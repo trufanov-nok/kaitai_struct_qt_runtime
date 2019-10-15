@@ -554,6 +554,30 @@ std::string kaitai::kstream::reverse(std::string val) {
     return val;
 }
 
+uint8_t kaitai::kstream::byte_array_min(const std::string val) {
+    uint8_t min = 0xff; // UINT8_MAX
+    std::string::const_iterator end = val.end();
+    for (std::string::const_iterator it = val.begin(); it != end; ++it) {
+        uint8_t cur = static_cast<uint8_t>(*it);
+        if (cur < min) {
+            min = cur;
+        }
+    }
+    return min;
+}
+
+uint8_t kaitai::kstream::byte_array_max(const std::string val) {
+    uint8_t max = 0; // UINT8_MIN
+    std::string::const_iterator end = val.end();
+    for (std::string::const_iterator it = val.begin(); it != end; ++it) {
+        uint8_t cur = static_cast<uint8_t>(*it);
+        if (cur > max) {
+            max = cur;
+        }
+    }
+    return max;
+}
+
 // ========================================================================
 // Other internal methods
 // ========================================================================
