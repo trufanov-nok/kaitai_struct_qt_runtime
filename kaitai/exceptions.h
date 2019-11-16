@@ -6,6 +6,17 @@
 #include <string>
 #include <stdexcept>
 
+// We need to use "noexcept" in virtual destructor of our exceptions
+// subclasses. Different compilers have different ideas on how to
+// achieve that: C++98 compilers prefer `throw()`, C++11 and later
+// use `noexcept`. We define KS_NOEXCEPT macro for that.
+
+#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+#define KS_NOEXCEPT noexcept
+#else
+#define KS_NOEXCEPT throw()
+#endif
+
 namespace kaitai {
 
 /**
@@ -21,7 +32,7 @@ public:
     {
     }
 
-    virtual ~kstruct_error() noexcept {};
+    virtual ~kstruct_error() KS_NOEXCEPT {};
 
 protected:
     const std::string m_src_path;
@@ -39,7 +50,7 @@ public:
     {
     }
 
-    virtual ~undecided_endianness_error() noexcept {};
+    virtual ~undecided_endianness_error() KS_NOEXCEPT {};
 };
 
 /**
@@ -56,7 +67,7 @@ public:
 
 // "at pos #{io.pos}: validation failed: #{msg}"
 
-    virtual ~validation_failed_error() noexcept {};
+    virtual ~validation_failed_error() KS_NOEXCEPT {};
 
 protected:
     const kstream* m_io;
@@ -78,7 +89,7 @@ public:
 
     // "not equal, expected #{expected.inspect}, but got #{actual.inspect}"
 
-    virtual ~validation_not_equal_error<T>() noexcept {};
+    virtual ~validation_not_equal_error<T>() KS_NOEXCEPT {};
 
 protected:
     const T& m_expected;
