@@ -61,13 +61,13 @@ public:
      * Set stream pointer to designated position.
      * \param pos new position (offset in bytes from the beginning of the stream)
      */
-    void seek(uint64_t pos);
+    void seek(std::streampos pos);
 
     /**
      * Get current position of a stream pointer.
      * \return pointer position, number of bytes from the beginning of the stream
      */
-    uint64_t pos();
+    std::streampos pos();
 
     /**
      * Get total size of the stream in bytes.
@@ -224,7 +224,9 @@ public:
      */
     static std::string to_string(int val);
 
-    /**
+    static uint64_t pos_to_uint(std::iostream::pos_type pos);
+
+        /**
      * Reverses given string `val`, so that the first character becomes the
      * last and the last one becomes the first. This should be used to avoid
      * the need of local variables at the caller.

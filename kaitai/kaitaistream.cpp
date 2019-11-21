@@ -77,11 +77,11 @@ bool kaitai::kstream::is_eof() const {
     }
 }
 
-void kaitai::kstream::seek(uint64_t pos) {
+void kaitai::kstream::seek(std::streampos pos) {
     m_io->seekg(pos);
 }
 
-uint64_t kaitai::kstream::pos() {
+std::streampos kaitai::kstream::pos() {
     return m_io->tellg();
 }
 
@@ -90,7 +90,7 @@ uint64_t kaitai::kstream::size() {
     m_io->seekg(0, std::ios::end);
     std::iostream::pos_type len = m_io->tellg();
     m_io->seekg(cur_pos);
-    return len;
+    return kaitai::kstream::pos_to_uint(len);
 }
 
 // ========================================================================
@@ -112,30 +112,30 @@ int8_t kaitai::kstream::read_s1() {
 // ........................................................................
 
 int16_t kaitai::kstream::read_s2be() {
-    int16_t t;
+    uint16_t t;
     m_io->read(reinterpret_cast<char *>(&t), 2);
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_16(t);
 #endif
-    return t;
+    return int16_t(t);
 }
 
 int32_t kaitai::kstream::read_s4be() {
-    int32_t t;
+    uint32_t t;
     m_io->read(reinterpret_cast<char *>(&t), 4);
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_32(t);
 #endif
-    return t;
+    return int32_t(t);
 }
 
 int64_t kaitai::kstream::read_s8be() {
-    int64_t t;
+    uint64_t t;
     m_io->read(reinterpret_cast<char *>(&t), 8);
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_64(t);
 #endif
-    return t;
+    return int64_t(t);
 }
 
 // ........................................................................
@@ -176,7 +176,7 @@ int64_t kaitai::kstream::read_s8le() {
 uint8_t kaitai::kstream::read_u1() {
     char t;
     m_io->get(t);
-    return t;
+    return uint8_t(t);
 }
 
 // ........................................................................
@@ -310,7 +310,7 @@ uint64_t kaitai::kstream::read_bits_int(int n) {
         char buf[8];
         m_io->read(buf, bytes_needed);
         for (int i = 0; i < bytes_needed; i++) {
-            uint8_t b = buf[i];
+            uint8_t b = uint8_t(buf[i]);
             m_bits <<= 8;
             m_bits |= b;
             m_bits_left += 8;
@@ -345,14 +345,13 @@ uint64_t kaitai::kstream::get_mask_ones(int n) {
 // ========================================================================
 
 std::string kaitai::kstream::read_bytes(std::streamsize len) {
-    std::vector<char> result(len);
-
     // NOTE: streamsize type is signed, negative values are only *supposed* to not be used.
     // http://en.cppreference.com/w/cpp/io/streamsize
     if (len < 0) {
         throw std::runtime_error("read_bytes: requested a negative amount");
     }
 
+    std::vector<char> result(static_cast<unsigned long>(len));
     if (len > 0) {
         m_io->read(&result[0], len);
     }
@@ -364,13 +363,13 @@ std::string kaitai::kstream::read_bytes_full() {
     std::iostream::pos_type p1 = m_io->tellg();
     m_io->seekg(0, std::ios::end);
     std::iostream::pos_type p2 = m_io->tellg();
-    size_t len = p2 - p1;
+    std::streamoff len = p2 - p1;
 
     // Note: this requires a std::string to be backed with a
     // contiguous buffer. Officially, it's a only requirement since
     // C++11 (C++98 and C++03 didn't have this requirement), but all
     // major implementations had contiguous buffers anyway.
-    std::string result(len, ' ');
+    std::string result(static_cast<unsigned long>(len), ' ');
     m_io->seekg(p1);
     m_io->read(&result[0], len);
 
@@ -396,7 +395,13 @@ std::string kaitai::kstream::read_bytes_term(char term, bool include, bool consu
 }
 
 std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
-    std::string actual = read_bytes(expected.length());
+    size_t len = expected.length();
+    if (len > std::numeric_limits<std::streamsize>::max()) {
+        // TODO: Implement this the right way and make it work with large strings too.
+        throw std::runtime_error("ensure_fixed_contents: string is too large");
+    }
+
+    std::string actual = read_bytes(std::streamsize(len));
 
     if (actual != expected) {
         // NOTE: I think printing it outright is not best idea, it could contain non-ascii charactes like backspace and beeps and whatnot. It would be better to print hexlified version, and also to redirect it to stderr.
@@ -463,7 +468,8 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
     std::string result(len, ' ');
 
     for (size_t i = 0; i < len; i++) {
-        uint8_t bits = data[i];
+        // NOTE: Should not cause any trouble, ask.
+        uint8_t bits = uint8_t(data[i]);
         result[i] = (bits << amount) | (bits >> (8 - amount));
     }
 
@@ -541,10 +547,22 @@ std::string kaitai::kstream::to_string(int val) {
     int got_len = snprintf(buf, sizeof(buf), "%d", val);
 
     // should never happen, but check nonetheless
-    if (got_len > sizeof(buf))
+    if (got_len < 0) {
+        throw std::invalid_argument("to_string: could not write to buffer");
+    }
+
+    if (size_t(got_len) > sizeof(buf))
         throw std::invalid_argument("to_string: integer is longer than string buffer");
 
     return std::string(buf);
+}
+
+uint64_t kaitai::kstream::pos_to_uint(std::iostream::pos_type pos) {
+    if (pos < 0) {
+        throw std::runtime_error("pos_to_uint: tellg() failure");
+    }
+    // TODO: Static sizeof assert.
+    return static_cast<uint64_t>(pos);
 }
 
 #include <algorithm>
@@ -647,7 +665,7 @@ std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) 
     return dst;
 }
 #elif defined(KS_STR_ENCODING_NONE)
-std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) {
+std::string kaitai::kstream::bytes_to_str(std::string src, __attribute__((unused)) std::string src_enc) {
     return src;
 }
 #else
