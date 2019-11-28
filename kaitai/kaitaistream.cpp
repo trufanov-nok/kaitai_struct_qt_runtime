@@ -397,7 +397,6 @@ std::string kaitai::kstream::read_bytes_term(char term, bool include, bool consu
 std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
     size_t len = expected.length();
     if (len > std::numeric_limits<std::streamsize>::max()) {
-        // TODO: Implement this the right way and make it work with large strings too.
         throw std::runtime_error("ensure_fixed_contents: string is too large");
     }
 
@@ -561,7 +560,7 @@ uint64_t kaitai::kstream::pos_to_uint(std::iostream::pos_type pos) {
     if (pos < 0) {
         throw std::runtime_error("pos_to_uint: tellg() failure");
     }
-    // TODO: Static sizeof assert.
+    static_assert(sizeof(std::streamoff) <= sizeof(uint64_t), "pos_to_uint: invalid conversion");
     return static_cast<uint64_t>(pos);
 }
 
