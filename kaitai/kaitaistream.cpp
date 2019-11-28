@@ -351,7 +351,7 @@ std::string kaitai::kstream::read_bytes(std::streamsize len) {
         throw std::runtime_error("read_bytes: requested a negative amount");
     }
 
-    std::vector<char> result(static_cast<unsigned long>(len));
+    std::vector<char> result(static_cast<std::vector<char>::size_type>(len));
     if (len > 0) {
         m_io->read(&result[0], len);
     }
@@ -369,7 +369,7 @@ std::string kaitai::kstream::read_bytes_full() {
     // contiguous buffer. Officially, it's a only requirement since
     // C++11 (C++98 and C++03 didn't have this requirement), but all
     // major implementations had contiguous buffers anyway.
-    std::string result(static_cast<unsigned long>(len), ' ');
+    std::string result(static_cast<std::string::size_type>(len), ' ');
     m_io->seekg(p1);
     m_io->read(&result[0], len);
 
@@ -467,7 +467,6 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
     std::string result(len, ' ');
 
     for (size_t i = 0; i < len; i++) {
-        // NOTE: Should not cause any trouble, ask.
         uint8_t bits = uint8_t(data[i]);
         result[i] = (bits << amount) | (bits >> (8 - amount));
     }
@@ -558,7 +557,7 @@ std::string kaitai::kstream::to_string(int val) {
 
 uint64_t kaitai::kstream::pos_to_uint(std::iostream::pos_type pos) {
     if (pos < 0) {
-        throw std::runtime_error("pos_to_uint: tellg() failure");
+        throw std::runtime_error("pos_to_uint: negative position, stream error");
     }
     static_assert(sizeof(std::streamoff) <= sizeof(uint64_t), "pos_to_uint: invalid conversion");
     return static_cast<uint64_t>(pos);
