@@ -664,7 +664,7 @@ std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) 
     return dst;
 }
 #elif defined(KS_STR_ENCODING_NONE)
-std::string kaitai::kstream::bytes_to_str(std::string src, __attribute__((unused)) std::string src_enc) {
+std::string kaitai::kstream::bytes_to_str(std::string src, std::string /* src_enc */) {
     return src;
 }
 #else
