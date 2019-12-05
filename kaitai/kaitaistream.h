@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <limits>
+#include <cstring>
 
 namespace kaitai {
 
@@ -279,6 +280,13 @@ inline auto to_signed(From from) {
     }
 
     throw std::runtime_error("toSigned: Invalid casting");
+}
+
+template<class Output, class Read>
+inline void type_pun(Output& output, Read& read)
+{
+    static_assert(sizeof(read) == sizeof(output), "Type sizes don't match");
+    std::memcpy(&output, &read, sizeof(output));
 }
 
 }
