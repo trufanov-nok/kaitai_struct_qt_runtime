@@ -256,7 +256,7 @@ float kaitai::kstream::read_f4be() {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_32(t);
 #endif
-    type_pun(&out, &t);
+    type_pun(out, t);
     return out;
 }
 
@@ -267,7 +267,7 @@ double kaitai::kstream::read_f8be() {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_64(t);
 #endif
-    type_pun(&out, &t);
+    type_pun(out, t);
     return out;
 }
 
@@ -282,7 +282,7 @@ float kaitai::kstream::read_f4le() {
 #if __BYTE_ORDER == __BIG_ENDIAN
     t = bswap_32(t);
 #endif
-    type_pun(&out, &t);
+    type_pun(out, t);
     return out;
 }
 
@@ -293,7 +293,7 @@ double kaitai::kstream::read_f8le() {
 #if __BYTE_ORDER == __BIG_ENDIAN
     t = bswap_64(t);
 #endif
-    type_pun(&out, &t);
+    type_pun(out, t);
     return out;
 }
 

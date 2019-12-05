@@ -283,10 +283,10 @@ inline auto to_signed(From from) {
 }
 
 template<class Output, class Read>
-inline void type_pun(const Output& output, const Read& read)
+inline void type_pun(Output& output, Read& read)
 {
-    static_assert(sizeof(Read) == sizeof(Output), "Type sizes don't match");
-    std::memcpy(output, read, sizeof(*output));
+    static_assert(sizeof(output) == sizeof(output), "Type sizes don't match");
+    std::memcpy(&output, &read, sizeof(output));
 }
 
 }
