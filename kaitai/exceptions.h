@@ -76,7 +76,7 @@ protected:
 /**
  * Signals validation failure: we required "actual" value to be equal to
  * "expected", but it turned out that it's not.
-*/
+ */
 template<typename T>
 class validation_not_equal_error: public validation_failed_error {
 public:
@@ -93,6 +93,73 @@ public:
 
 protected:
     const T& m_expected;
+    const T& m_actual;
+};
+
+/**
+ * Signals validation failure: we required "actual" value to be greater
+ * than or equal to "min", but it turned out that it's not.
+ */
+template<typename T>
+class validation_less_than_error: public validation_failed_error {
+public:
+    validation_less_than_error<T>(const T& min, const T& actual, const kstream* io, const std::string src_path):
+        validation_failed_error("not in range", io, src_path),
+        m_min(min),
+        m_actual(actual)
+    {
+    }
+
+    // "not in range, min #{min.inspect}, but got #{actual.inspect}"
+
+    virtual ~validation_less_than_error<T>() KS_NOEXCEPT {};
+
+protected:
+    const T& m_min;
+    const T& m_actual;
+};
+
+/**
+ * Signals validation failure: we required "actual" value to be less
+ * than or equal to "max", but it turned out that it's not.
+ */
+template<typename T>
+class validation_greater_than_error: public validation_failed_error {
+public:
+    validation_greater_than_error<T>(const T& max, const T& actual, const kstream* io, const std::string src_path):
+        validation_failed_error("not in range", io, src_path),
+        m_max(max),
+        m_actual(actual)
+    {
+    }
+
+    // "not in range, max #{max.inspect}, but got #{actual.inspect}"
+
+    virtual ~validation_greater_than_error<T>() KS_NOEXCEPT {};
+
+protected:
+    const T& m_max;
+    const T& m_actual;
+};
+
+/**
+ * Signals validation failure: we required "actual" value to be less
+ * than or equal to "max", but it turned out that it's not.
+ */
+template<typename T>
+class validation_not_any_of_error: public validation_failed_error {
+public:
+    validation_not_any_of_error<T>(const T& max, const T& actual, const kstream* io, const std::string src_path):
+        validation_failed_error("not any of the list", io, src_path),
+        m_actual(actual)
+    {
+    }
+
+    // "not any of the list, got #{actual.inspect}"
+
+    virtual ~validation_not_any_of_error<T>() KS_NOEXCEPT {};
+
+protected:
     const T& m_actual;
 };
 
