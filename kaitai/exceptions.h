@@ -143,13 +143,13 @@ protected:
 };
 
 /**
- * Signals validation failure: we required "actual" value to be less
- * than or equal to "max", but it turned out that it's not.
+ * Signals validation failure: we required "actual" value to be from
+ * the list, but it turned out that it's not.
  */
 template<typename T>
 class validation_not_any_of_error: public validation_failed_error {
 public:
-    validation_not_any_of_error<T>(const T& max, const T& actual, const kstream* io, const std::string src_path):
+    validation_not_any_of_error<T>(const T& actual, const kstream* io, const std::string src_path):
         validation_failed_error("not any of the list", io, src_path),
         m_actual(actual)
     {
