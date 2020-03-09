@@ -8,6 +8,8 @@
 #include <sstream>
 #include <stdint.h>
 #include <sys/types.h>
+#include <limits>
+#include <cstring>
 
 namespace kaitai {
 
@@ -61,13 +63,13 @@ public:
      * Set stream pointer to designated position.
      * \param pos new position (offset in bytes from the beginning of the stream)
      */
-    void seek(uint64_t pos);
+    void seek(std::streampos pos);
 
     /**
      * Get current position of a stream pointer.
      * \return pointer position, number of bytes from the beginning of the stream
      */
-    uint64_t pos();
+    std::streampos pos();
 
     /**
      * Get total size of the stream in bytes.
@@ -224,7 +226,14 @@ public:
      */
     static std::string to_string(int val);
 
+
     /**
+     * Safely converts std::iostream::pos_type to unsigned int
+     * Should be used instead of static casting.
+     */
+    static uint64_t pos_to_uint(std::iostream::pos_type pos);
+
+        /**
      * Reverses given string `val`, so that the first character becomes the
      * last and the last one becomes the first. This should be used to avoid
      * the need of local variables at the caller.
@@ -260,6 +269,25 @@ private:
 
     static const int ZLIB_BUF_SIZE = 128 * 1024;
 };
+
+template <class From>
+//inline typename std::make_signed<From>::type to_signed(From from) {
+inline auto to_signed(From from) {
+    using signed_F = typename std::make_signed<From>::type;
+
+    if (from <= std::numeric_limits<signed_F>::max()) {
+        return static_cast<signed_F>(from);
+    }
+
+    throw std::runtime_error("toSigned: Invalid casting");
+}
+
+template<class Output, class Read>
+inline void type_pun(Output& output, Read& read)
+{
+    static_assert(sizeof(read) == sizeof(output), "Type sizes don't match");
+    std::memcpy(&output, &read, sizeof(output));
+}
 
 }
 
