@@ -233,7 +233,7 @@ public:
      */
     static uint64_t pos_to_uint(std::iostream::pos_type pos);
 
-        /**
+    /**
      * Reverses given string `val`, so that the first character becomes the
      * last and the last one becomes the first. This should be used to avoid
      * the need of local variables at the caller.
