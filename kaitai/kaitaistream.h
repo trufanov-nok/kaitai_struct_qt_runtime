@@ -226,7 +226,6 @@ public:
      */
     static std::string to_string(int val);
 
-
     /**
      * Safely converts std::iostream::pos_type to unsigned int
      * Should be used instead of static casting.
