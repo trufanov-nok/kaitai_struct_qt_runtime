@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <limits>
 #include <cstring>
+#include <stdexcept>
 
 namespace kaitai {
 
