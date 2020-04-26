@@ -149,6 +149,7 @@ public:
 
     void align_to_byte();
     uint64_t read_bits_int(int n);
+    uint64_t read_bits_int_le(int n);
 
     //@}
 
