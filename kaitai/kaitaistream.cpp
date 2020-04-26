@@ -298,7 +298,7 @@ void kaitai::kstream::align_to_byte() {
     m_bits = 0;
 }
 
-uint64_t kaitai::kstream::read_bits_int(int n) {
+uint64_t kaitai::kstream::read_bits_int_be(int n) {
     int bits_needed = n - m_bits_left;
     if (bits_needed > 0) {
         // 1 bit  => 1 byte
@@ -330,6 +330,11 @@ uint64_t kaitai::kstream::read_bits_int(int n) {
     m_bits &= mask;
 
     return res;
+}
+
+// Deprecated, use read_bits_int_be() instead.
+uint64_t kaitai::kstream::read_bits_int(int n) {
+    return read_bits_int_be(n);
 }
 
 uint64_t kaitai::kstream::read_bits_int_le(int n) {
