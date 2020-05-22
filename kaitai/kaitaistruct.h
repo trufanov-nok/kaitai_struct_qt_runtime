@@ -13,6 +13,7 @@ protected:
     kstream *m__io;
 public:
     kstream *_io() { return m__io; }
+    virtual kstruct *_parent() const = 0;
 };
 
 }
