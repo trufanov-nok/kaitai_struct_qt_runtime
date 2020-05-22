@@ -159,6 +159,10 @@ public:
 
     virtual ~validation_not_any_of_error<T>() KS_NOEXCEPT {};
 
+protected:
+    const T& m_actual;
+};
+
 /**
  * Signals validation failure: we required "actual" value to match
  * the expression, but it turned out that it doesn't.
