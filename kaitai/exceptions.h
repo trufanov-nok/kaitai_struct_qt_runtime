@@ -70,7 +70,7 @@ public:
     virtual ~validation_failed_error() KS_NOEXCEPT {};
 
 protected:
-    const kstream* m_io;
+    kstream* m_io;
 };
 
 /**
@@ -80,7 +80,7 @@ protected:
 template<typename T>
 class validation_not_equal_error: public validation_failed_error {
 public:
-    validation_not_equal_error<T>(const T& expected, const T& actual, const kstream* io, const std::string src_path):
+    validation_not_equal_error<T>(const T& expected, const T& actual, kstream* io, const std::string src_path):
         validation_failed_error("not equal", io, src_path),
         m_expected(expected),
         m_actual(actual)
@@ -103,7 +103,7 @@ protected:
 template<typename T>
 class validation_less_than_error: public validation_failed_error {
 public:
-    validation_less_than_error<T>(const T& min, const T& actual, const kstream* io, const std::string src_path):
+    validation_less_than_error<T>(const T& min, const T& actual, kstream* io, const std::string src_path):
         validation_failed_error("not in range", io, src_path),
         m_min(min),
         m_actual(actual)
@@ -126,7 +126,7 @@ protected:
 template<typename T>
 class validation_greater_than_error: public validation_failed_error {
 public:
-    validation_greater_than_error<T>(const T& max, const T& actual, const kstream* io, const std::string src_path):
+    validation_greater_than_error<T>(const T& max, const T& actual, kstream* io, const std::string src_path):
         validation_failed_error("not in range", io, src_path),
         m_max(max),
         m_actual(actual)
@@ -149,7 +149,7 @@ protected:
 template<typename T>
 class validation_not_any_of_error: public validation_failed_error {
 public:
-    validation_not_any_of_error<T>(const T& actual, const kstream* io, const std::string src_path):
+    validation_not_any_of_error<T>(const T& actual, kstream* io, const std::string src_path):
         validation_failed_error("not any of the list", io, src_path),
         m_actual(actual)
     {
@@ -170,7 +170,7 @@ protected:
 template<typename T>
 class validation_expr_error: public validation_failed_error {
 public:
-    validation_expr_error<T>(const T& actual, const kstream* io, const std::string src_path):
+    validation_expr_error<T>(const T& actual, kstream* io, const std::string src_path):
         validation_failed_error("not matching the expression", io, src_path),
         m_actual(actual)
     {
