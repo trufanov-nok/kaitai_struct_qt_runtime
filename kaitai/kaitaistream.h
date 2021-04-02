@@ -13,7 +13,7 @@ namespace kaitai {
 
 /**
  * Kaitai Stream class (kaitai::kstream) is an implementation of
- * <a href="https://github.com/kaitai-io/kaitai_struct/wiki/Kaitai-Struct-stream-API">Kaitai Struct stream API</a>
+ * <a href="https://doc.kaitai.io/stream_api.html">Kaitai Struct stream API</a>
  * for C++/STL. It's implemented as a wrapper over generic STL std::istream.
  *
  * It provides a wide variety of simple methods to read (parse) binary
