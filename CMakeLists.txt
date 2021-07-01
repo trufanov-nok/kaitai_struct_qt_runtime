@@ -27,6 +27,8 @@ set (SOURCES
 
 set(STRING_ENCODING_TYPE "ICONV" CACHE STRING "Set the way strings have to be encoded (ICONV|NONE|...)")
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 add_library (${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY PUBLIC_HEADER ${HEADERS})
 
@@ -49,12 +51,9 @@ else()
     # User action requested
 endif()
 
-if (WIN32)
-    install(TARGETS ${PROJECT_NAME}
-        RUNTIME DESTINATION lib)
-else()
-    install (TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/kaitai
-    )
-endif()
+install(TARGETS ${PROJECT_NAME}
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    PUBLIC_HEADER DESTINATION include/kaitai
+)
