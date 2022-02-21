@@ -299,34 +299,32 @@ void kaitai::kstream::align_to_byte() {
 }
 
 uint64_t kaitai::kstream::read_bits_int_be(int n) {
+    uint64_t res = 0;
+
     int bits_needed = n - m_bits_left;
+    m_bits_left = -bits_needed & 7; // `-bits_needed mod 8`
+
     if (bits_needed > 0) {
         // 1 bit  => 1 byte
         // 8 bits => 1 byte
         // 9 bits => 2 bytes
-        int bytes_needed = ((bits_needed - 1) / 8) + 1;
+        int bytes_needed = ((bits_needed - 1) / 8) + 1; // `ceil(bits_needed / 8)`
         if (bytes_needed > 8)
-            throw std::runtime_error("read_bits_int: more than 8 bytes requested");
-        char buf[8];
-        m_io->read(buf, bytes_needed);
+            throw std::runtime_error("read_bits_int_be: more than 8 bytes requested");
+        uint8_t buf[8];
+        m_io->read(reinterpret_cast<char *>(buf), bytes_needed);
         for (int i = 0; i < bytes_needed; i++) {
-            uint8_t b = buf[i];
-            m_bits <<= 8;
-            m_bits |= b;
-            m_bits_left += 8;
+            res = res << 8 | buf[i];
         }
+
+        uint64_t new_bits = res;
+        res = res >> m_bits_left | (bits_needed < 64 ? m_bits << bits_needed : 0); // avoid undefined behavior of `x << 64`
+        m_bits = new_bits; // will be masked at the end of the function
+    } else {
+        res = m_bits >> -bits_needed; // shift unneeded bits out
     }
 
-    // raw mask with required number of 1s, starting from lowest bit
-    uint64_t mask = get_mask_ones(n);
-    // shift mask to align with highest bits available in @bits
-    int shift_bits = m_bits_left - n;
-    mask <<= shift_bits;
-    // derive reading result
-    uint64_t res = (m_bits & mask) >> shift_bits;
-    // clear top bits that we've just read => AND with 1s
-    m_bits_left -= n;
-    mask = get_mask_ones(m_bits_left);
+    uint64_t mask = (UINT64_C(1) << m_bits_left) - 1; // `m_bits_left` is in range 0..7, so `(1 << 64)` does not have to be considered
     m_bits &= mask;
 
     return res;
@@ -338,40 +336,41 @@ uint64_t kaitai::kstream::read_bits_int(int n) {
 }
 
 uint64_t kaitai::kstream::read_bits_int_le(int n) {
+    uint64_t res = 0;
     int bits_needed = n - m_bits_left;
+
     if (bits_needed > 0) {
         // 1 bit  => 1 byte
         // 8 bits => 1 byte
         // 9 bits => 2 bytes
-        int bytes_needed = ((bits_needed - 1) / 8) + 1;
-        if (bytes_needed > 8)
-            throw std::runtime_error("read_bits_int_le: more than 8 bytes requested");
-        char buf[8];
-        m_io->read(buf, bytes_needed);
+        int bytes_needed = ((bits_needed - 1) / 8) + 1; // `ceil(bits_needed / 8)`
+        uint8_t buf[8];
+        m_io->read(reinterpret_cast<char *>(buf), bytes_needed);
         for (int i = 0; i < bytes_needed; i++) {
-            uint8_t b = buf[i];
-            m_bits |= (static_cast<uint64_t>(b) << m_bits_left);
-            m_bits_left += 8;
+            res |= static_cast<uint64_t>(buf[i]) << (i * 8);
         }
-    }
 
-    // raw mask with required number of 1s, starting from lowest bit
-    uint64_t mask = get_mask_ones(n);
-    // derive reading result
-    uint64_t res = m_bits & mask;
-    // remove bottom bits that we've just read by shifting
-    m_bits >>= n;
-    m_bits_left -= n;
-
-    return res;
-}
-
-uint64_t kaitai::kstream::get_mask_ones(int n) {
-    if (n == 64) {
-        return 0xFFFFFFFFFFFFFFFF;
+        // NB: for bit shift operators in C++, "if the value of the right operand is
+        // negative or is greater or equal to the number of bits in the promoted left
+        // operand, the behavior is undefined." (see
+        // https://en.cppreference.com/w/cpp/language/operator_arithmetic#Bitwise_shift_operators)
+        // So we define our desired behavior here.
+        uint64_t new_bits = bits_needed < 64 ? res >> bits_needed : 0;
+        res = res << m_bits_left | m_bits;
+        m_bits = new_bits;
     } else {
-        return ((uint64_t) 1 << n) - 1;
+        res = m_bits;
+        m_bits >>= n;
     }
+
+    m_bits_left = -bits_needed & 7; // `-bits_needed mod 8`
+
+    if (n < 64) {
+        uint64_t mask = (UINT64_C(1) << n) - 1;
+        res &= mask;
+    }
+    // if `n == 64`, do nothing
+    return res;
 }
 
 // ========================================================================
