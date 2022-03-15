@@ -344,6 +344,8 @@ uint64_t kaitai::kstream::read_bits_int_le(int n) {
         // 8 bits => 1 byte
         // 9 bits => 2 bytes
         int bytes_needed = ((bits_needed - 1) / 8) + 1; // `ceil(bits_needed / 8)`
+        if (bytes_needed > 8)
+            throw std::runtime_error("read_bits_int_le: more than 8 bytes requested");
         uint8_t buf[8];
         m_io->read(reinterpret_cast<char *>(buf), bytes_needed);
         for (int i = 0; i < bytes_needed; i++) {
