@@ -26,12 +26,12 @@
 #include <vector>
 #include <stdexcept>
 
-kaitai::kstream::kstream(std::istream* io) {
+kaitai::kstream::kstream(std::istream *io) {
     m_io = io;
     init();
 }
 
-kaitai::kstream::kstream(const std::string& data): m_io_str(data) {
+kaitai::kstream::kstream(const std::string &data) : m_io_str(data) {
     m_io = &m_io_str;
     init();
 }
@@ -62,9 +62,7 @@ bool kaitai::kstream::is_eof() const {
         return false;
     }
     char t;
-    m_io->exceptions(
-        std::istream::badbit
-    );
+    m_io->exceptions(std::istream::badbit);
     m_io->get(t);
     if (m_io->eof()) {
         m_io->clear();
@@ -255,7 +253,7 @@ float kaitai::kstream::read_f4be() {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_32(t);
 #endif
-    return reinterpret_cast<float&>(t);
+    return reinterpret_cast<float &>(t);
 }
 
 double kaitai::kstream::read_f8be() {
@@ -264,7 +262,7 @@ double kaitai::kstream::read_f8be() {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_64(t);
 #endif
-    return reinterpret_cast<double&>(t);
+    return reinterpret_cast<double &>(t);
 }
 
 // ........................................................................
@@ -277,7 +275,7 @@ float kaitai::kstream::read_f4le() {
 #if __BYTE_ORDER == __BIG_ENDIAN
     t = bswap_32(t);
 #endif
-    return reinterpret_cast<float&>(t);
+    return reinterpret_cast<float &>(t);
 }
 
 double kaitai::kstream::read_f8le() {
@@ -286,7 +284,7 @@ double kaitai::kstream::read_f8le() {
 #if __BYTE_ORDER == __BIG_ENDIAN
     t = bswap_64(t);
 #endif
-    return reinterpret_cast<double&>(t);
+    return reinterpret_cast<double &>(t);
 }
 
 // ========================================================================
@@ -434,7 +432,9 @@ std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
     std::string actual = read_bytes(expected.length());
 
     if (actual != expected) {
-        // NOTE: I think printing it outright is not best idea, it could contain non-ascii charactes like backspace and beeps and whatnot. It would be better to print hexlified version, and also to redirect it to stderr.
+        // NOTE: I think printing it outright is not best idea, it could contain non-ASCII characters
+        // like backspace and beeps and whatnot. It would be better to print hexlified version, and
+        // also to redirect it to stderr.
         throw std::runtime_error("ensure_fixed_contents: actual data does not match expected data");
     }
 
@@ -511,7 +511,7 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
 std::string kaitai::kstream::process_zlib(std::string data) {
     int ret;
 
-    unsigned char *src_ptr = reinterpret_cast<unsigned char*>(&data[0]);
+    unsigned char *src_ptr = reinterpret_cast<unsigned char *>(&data[0]);
     std::stringstream dst_strm;
 
     z_stream strm;
@@ -531,16 +531,16 @@ std::string kaitai::kstream::process_zlib(std::string data) {
 
     // get the decompressed bytes blockwise using repeated calls to inflate
     do {
-        strm.next_out = reinterpret_cast<Bytef*>(outbuffer);
+        strm.next_out = reinterpret_cast<Bytef *>(outbuffer);
         strm.avail_out = sizeof(outbuffer);
 
         ret = inflate(&strm, 0);
 
         if (outstring.size() < strm.total_out)
-            outstring.append(reinterpret_cast<char*>(outbuffer), strm.total_out - outstring.size());
+            outstring.append(reinterpret_cast<char *>(outbuffer), strm.total_out - outstring.size());
     } while (ret == Z_OK);
 
-    if (ret != Z_STREAM_END) {          // an error occurred that was not EOF
+    if (ret != Z_STREAM_END) { // an error occurred that was not EOF
         std::ostringstream exc_msg;
         exc_msg << "process_zlib: error #" << ret << "): " << strm.msg;
         throw std::runtime_error(exc_msg.str());
@@ -630,7 +630,7 @@ uint8_t kaitai::kstream::byte_array_max(const std::string val) {
 std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) {
     iconv_t cd = iconv_open(KS_STR_DEFAULT_ENCODING, src_enc.c_str());
 
-    if (cd == (iconv_t) -1) {
+    if (cd == (iconv_t)-1) {
         if (errno == EINVAL) {
             throw std::runtime_error("bytes_to_str: invalid encoding pair conversion requested");
         } else {
@@ -652,7 +652,7 @@ std::string kaitai::kstream::bytes_to_str(std::string src, std::string src_enc) 
     while (true) {
         size_t res = iconv(cd, &src_ptr, &src_left, &dst_ptr, &dst_left);
 
-        if (res == (size_t) -1) {
+        if (res == (size_t)-1) {
             if (errno == E2BIG) {
                 // dst buffer is not enough to accomodate whole string
                 // enlarge the buffer and try again
