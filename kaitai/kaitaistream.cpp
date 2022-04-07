@@ -566,23 +566,23 @@ int kaitai::kstream::mod(int a, int b) {
     return r;
 }
 
-#include <stdio.h>
-std::string kaitai::kstream::to_string(int val) {
-    // if int is 32 bits, "-2147483648" is the longest string representation
-    //   => 11 chars + zero => 12 chars
-    // if int is 64 bits, "-9223372036854775808" is the longest
-    //   => 20 chars + zero => 21 chars
-    char buf[25];
-    int got_len = snprintf(buf, sizeof(buf), "%d", val);
-
-    // should never happen, but check nonetheless
-    if (got_len > sizeof(buf))
-        throw std::invalid_argument("to_string: integer is longer than string buffer");
-
-    return std::string(buf);
+#include <algorithm>
+void kaitai::kstream::unsigned_to_decimal(uint64_t number, char *buffer) {
+    // Implementation from https://ideone.com/nrQfA8 by Alf P. Steinbach
+    // (see https://www.zverovich.net/2013/09/07/integer-to-string-conversion-in-cplusplus.html#comment-1033931478)
+    if (number == 0) {
+        *buffer++ = '0';
+    } else {
+        char *p_first = buffer;
+        while (number != 0) {
+            *buffer++ = static_cast<char>('0' + number % 10);
+            number /= 10;
+        }
+        std::reverse(p_first, buffer);
+    }
+    *buffer = '\0';
 }
 
-#include <algorithm>
 std::string kaitai::kstream::reverse(std::string val) {
     std::reverse(val.begin(), val.end());
 
