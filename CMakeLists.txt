@@ -1,5 +1,6 @@
 project (kaitai_struct_cpp_stl_runtime CXX)
 cmake_minimum_required (VERSION 3.3)
+enable_testing()
 
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -57,3 +58,6 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
     PUBLIC_HEADER DESTINATION include/kaitai
 )
+
+# Add the tests
+add_subdirectory(tests)
