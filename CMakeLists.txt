@@ -30,6 +30,13 @@ set(STRING_ENCODING_TYPE "ICONV" CACHE STRING "Set the way strings have to be en
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+# Maximum warnings emission, treat all warnings as errors
+if (MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+endif()
+
 add_library (${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY PUBLIC_HEADER ${HEADERS})
 
