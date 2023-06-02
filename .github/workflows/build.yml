@@ -23,7 +23,7 @@ jobs:
     runs-on: windows-latest
     # NB: see https://github.com/actions/runner-images/blob/main/images/win/Windows2022-Readme.md for what's available in this image
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: restore
         run: |
           C:\vcpkg\bootstrap-vcpkg.bat
