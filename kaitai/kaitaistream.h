@@ -246,7 +246,7 @@ public:
         if (val < 0) {
             buf[0] = '-';
             // get absolute value without undefined behavior (https://stackoverflow.com/a/12231604)
-            unsigned_to_decimal(-static_cast<uint64_t>(val), &buf[1]);
+            unsigned_to_decimal(-static_cast<int64_t>(val), &buf[1]);
         } else {
             unsigned_to_decimal(val, buf);
         }
