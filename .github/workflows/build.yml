@@ -18,3 +18,17 @@ jobs:
         run: .build/build
       - name: unittest
         run: .build/run-unittest
+
+  windows:
+    runs-on: windows-latest
+    # NB: see https://github.com/actions/runner-images/blob/main/images/win/Windows2022-Readme.md for what's available in this image
+    steps:
+      - uses: actions/checkout@v1
+      - name: restore
+        run: |
+          C:\vcpkg\bootstrap-vcpkg.bat
+          C:\vcpkg\vcpkg install gtest
+      - name: build
+        run: .build\build.ps1 -GTestPath C:\vcpkg\installed\x64-windows
+      - name: unittest
+        run: .build\run-unittest.ps1
