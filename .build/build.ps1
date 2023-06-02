@@ -10,6 +10,7 @@ Requires:
 
 [CmdletBinding()]
 param (
+    [Parameter(Mandatory=$true)]
     [string] $GTestPath
 )
 
@@ -18,8 +19,12 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $PSDefaultParameterValues['*:ErrorAction']='Stop'
 
-$null = New-Item ..\build -ItemType Directory -Force
-Push-Location ..\build
+# Go to repo root
+$repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
+Push-Location $repoRoot
+
+$null = New-Item build -ItemType Directory -Force
+cd build
 
 cmake -DCMAKE_PREFIX_PATH="$GTestPath" -DSTRING_ENCODING_TYPE=NONE ..
 cmake --build . --config Debug

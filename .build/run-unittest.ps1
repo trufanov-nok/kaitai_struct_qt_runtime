@@ -8,7 +8,11 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $PSDefaultParameterValues['*:ErrorAction']='Stop'
 
-Push-Location ..\build
+# Go to repo root
+$repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
+Push-Location $repoRoot
+
+cd build
 
 # Use ctest
 #ctest -C Debug --output-on-failure
