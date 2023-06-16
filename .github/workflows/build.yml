@@ -39,21 +39,23 @@ jobs:
   #   To work around this, we use plain GNU make(1) and supply custom Makefile.gcc4.
   linux_ubuntu_7_10:
     runs-on: ubuntu-latest
+    container: 'icomputer7/ancient-ubuntu-docker:gutsy'
     steps:
-      - uses: actions/checkout@v3
       - name: restore
-        container: 'icomputer7/ancient-ubuntu-docker:gutsy'
         run: |
           apt-get update
           apt-get -y --no-install-recommends install \
               git \
               make \
               g++
+      # Can't use actions/checkout@v3, as it depends on NodeJS, which is not available in this image
+      - name: checkout
+        run: |
+          git clone ${{ github.repositoryUrl }} .
+          git checkout ${{ github.sha }}
       - name: build
-        container: 'icomputer7/ancient-ubuntu-docker:gutsy'
         run: make -f Makefile.gcc4
       - name: unittest
-        container: 'icomputer7/ancient-ubuntu-docker:gutsy'
         run: build/unittest
 
   windows:
