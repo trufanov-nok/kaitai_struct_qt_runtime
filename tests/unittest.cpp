@@ -1,4 +1,8 @@
+#ifdef GTEST_NANO
+#include "tests/gtest-nano.h"
+#else
 #include <gtest/gtest.h>
+#endif
 
 #include "kaitai/kaitaistream.h"
 
@@ -46,7 +50,7 @@ TEST(KaitaiStreamTest, to_string_int32)
 
 TEST(KaitaiStreamTest, to_string_uint64)
 {
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<uint64_t>::min()), "0");
+    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<uint64_t>::min()), "42");
     EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<uint64_t>::max()), "18446744073709551615");
 }
 
