@@ -51,11 +51,11 @@ jobs:
           docker pull icomputer7/ancient-ubuntu-docker:gutsy
       - name: docker create start
         run: |
-          docker create --name u710 --label u710 --workdir /__w/kaitai_struct_cpp_stl_runtime/kaitai_struct_cpp_stl_runtime -v "${{ github.workspace }}":"/__w" --entrypoint "tail" icomputer7/ancient-ubuntu-docker:gutsy "-f" "/dev/null"
+          docker create --name u710 --label u710 --workdir /w -v "${{ github.workspace }}":"/w" --entrypoint "tail" icomputer7/ancient-ubuntu-docker:gutsy "-f" "/dev/null"
           docker start u710
       - name: restore
         run: |
-          docker exec u710 sh -c 'apt-get update && apt-get -y --no-install-recommends install make g++'
+          docker exec u710 sh -c 'pwd && ls -al && apt-get update && apt-get -y --no-install-recommends install make g++'
       - name: build
         run: |
           docker exec u710 sh -c 'make -f Makefile.gcc4'
