@@ -38,7 +38,9 @@ jobs:
   # * CMake is way too old to be usable without major rewrite of all the CMakeLists.txt to use ancient/deprecated syntax.
   #   To work around this, we use plain GNU make(1) and supply custom Makefile.gcc4.
   linux_ubuntu_7_10:
-    runs-on: icomputer7/ancient-ubuntu-docker:gutsy
+    runs-on: ubuntu-latest
+    container:
+      image: icomputer7/ancient-ubuntu-docker:gutsy
     steps:
       - name: restore
         run: |
