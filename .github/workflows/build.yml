@@ -29,6 +29,11 @@ jobs:
   #
   # This one is challenging:
   #
+  # * It's impossible to run git clone inside this container (as old git will use ancient protocols not supported anymore
+  #   by GitHub, and also standard `actions/checkout@v3` will depend on NodeJS/npm, which are not available in this container).
+  #   To work around this, we start/stop container manually and use targeted execution of specific build/run commands only
+  #   inside the container, keeping git and networking stuff out.
+  #
   # * For gcc, vast majority of C++11 features are missing from this release (many were added around GCC 4.3 and 4.4).
   #   Some C99 features are also missing. C++98 support seems to be full-featued.
   #
@@ -39,28 +44,28 @@ jobs:
   #   To work around this, we use plain GNU make(1) and supply custom Makefile.gcc4.
   linux_ubuntu_7_10:
     runs-on: ubuntu-latest
-    container: 'icomputer7/ancient-ubuntu-docker:gutsy'
     steps:
+      - uses: actions/checkout@v3
+      - name: docker pull
+        run: |
+          docker pull icomputer7/ancient-ubuntu-docker:gutsy
+      - name: docker create start
+        run: |
+          docker create --name u710 --label u710 --workdir /__w/kaitai_struct_cpp_stl_runtime/kaitai_struct_cpp_stl_runtime -v "${{ github.workspace }}":"/__w" --entrypoint "tail" icomputer7/ancient-ubuntu-docker:gutsy "-f" "/dev/null"
+          docker start u710
       - name: restore
         run: |
-          apt-get update
-          apt-get -y --no-install-recommends install \
-              git-core \
-              make \
-              g++
-          git --version
-      # Can't use actions/checkout@v3, as it depends on NodeJS, which is not available in this image
-      - name: checkout
-        run: |
-          git clone https://github.com/${{ github.repository }}/ __repo
-          find __repo -mindepth 1 -maxdepth 1 -print0 | xargs -0 -i mv '{}' .
-          rmdir __repo
-          git checkout ${{ github.sha }}
+          docker exec u710 sh -c 'apt-get update && apt-get -y --no-install-recommends install make g++'
       - name: build
-        run: make -f Makefile.gcc4
+        run: |
+          docker exec u710 sh -c 'make -f Makefile.gcc4'
       - name: unittest
-        run: build/unittest
-
+        run: |
+          docker exec u710 sh -c 'build/unittest'
+      - name: docker shutdown
+        run: |
+          docker stop u710
+          docker rm u710
   windows:
     runs-on: windows-latest
     # NB: see https://github.com/actions/runner-images/blob/main/images/win/Windows2022-Readme.md for what's available in this image
