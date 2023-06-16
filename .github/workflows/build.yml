@@ -48,9 +48,11 @@ jobs:
               git \
               make \
               g++
+          git --version
       # Can't use actions/checkout@v3, as it depends on NodeJS, which is not available in this image
       - name: checkout
         run: |
+          git --version
           git clone ${{ github.repositoryUrl }} .
           git checkout ${{ github.sha }}
       - name: build
