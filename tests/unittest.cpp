@@ -1,4 +1,8 @@
+#ifdef GTEST_NANO
+#include "tests/gtest-nano.h"
+#else
 #include <gtest/gtest.h>
+#endif
 
 #include "kaitai/kaitaistream.h"
 

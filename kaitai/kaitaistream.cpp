@@ -331,7 +331,7 @@ uint64_t kaitai::kstream::read_bits_int_be(int n) {
         res = m_bits >> -bits_needed; // shift unneeded bits out
     }
 
-    uint64_t mask = (UINT64_C(1) << m_bits_left) - 1; // `m_bits_left` is in range 0..7, so `(1 << 64)` does not have to be considered
+    uint64_t mask = (static_cast<uint64_t>(1) << m_bits_left) - 1; // `m_bits_left` is in range 0..7, so `(1 << 64)` does not have to be considered
     m_bits &= mask;
 
     return res;
@@ -375,7 +375,7 @@ uint64_t kaitai::kstream::read_bits_int_le(int n) {
     m_bits_left = -bits_needed & 7; // `-bits_needed mod 8`
 
     if (n < 64) {
-        uint64_t mask = (UINT64_C(1) << n) - 1;
+        uint64_t mask = (static_cast<uint64_t>(1) << n) - 1;
         res &= mask;
     }
     // if `n == 64`, do nothing
