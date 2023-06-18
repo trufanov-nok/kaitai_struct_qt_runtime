@@ -6,8 +6,8 @@
 
 namespace testing {
     struct TestInfo {
-        const char* suite;
-        const char* name;
+        const char *suite;
+        const char *name;
         void (*testFunc)();
     };
 
@@ -15,7 +15,7 @@ namespace testing {
     bool g_testPass;
     bool g_allPass;
 
-    void InitGoogleTest(int* argc, char** argv) {
+    void InitGoogleTest(int *argc, char **argv) {
         std::cout << "[----------] gtest-nano: starting up\n";
     }
 
@@ -24,7 +24,7 @@ namespace testing {
 
         g_allPass = true;
         for (std::vector<TestInfo>::const_iterator it = g_tests.begin(); it != g_tests.end(); ++it) {
-            const TestInfo& test = *it;
+            const TestInfo &test = *it;
             g_testPass = true;
             std::cout << "[ RUN      ] " << test.suite << "." << test.name << "\n";
             test.testFunc();
