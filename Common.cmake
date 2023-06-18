@@ -5,3 +5,10 @@ elseif (STRING_ENCODING_TYPE STREQUAL "NONE")
 else()
     # User action requested
 endif()
+
+# Maximum warnings emission, treat all warnings as errors
+if (MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+endif()
