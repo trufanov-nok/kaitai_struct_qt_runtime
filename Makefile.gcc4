@@ -26,8 +26,8 @@ $(BUILD_DIR):
 $(BUILD_DIR)/unittest: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o build/unittest $(OBJS) $(LFLAGS) $(LIBS)
 
-$(BUILD_DIR)/kaitaistream.o: kaitai/kaitaistream.cpp
+$(BUILD_DIR)/kaitaistream.o: kaitai/kaitaistream.cpp kaitai/kaitaistream.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(DEFINES) -c $< -o $@
 
-$(BUILD_DIR)/unittest.o: tests/unittest.cpp tests/gtest-nano.h
+$(BUILD_DIR)/unittest.o: tests/unittest.cpp tests/gtest-nano.h kaitai/kaitaistream.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(DEFINES) -c $< -o $@
