@@ -13,8 +13,8 @@ OBJS := \
 
 DEFINES := -DKS_STR_ENCODING_ICONV -DGTEST_NANO
 
-LFLAGS :=
-LIBS :=
+LDFLAGS :=
+LDLIBS :=
 
 INCLUDES := -I.
 
@@ -24,7 +24,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 $(BUILD_DIR)/unittest: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o build/unittest $(OBJS) $(LFLAGS) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o build/unittest $(OBJS) $(LDFLAGS) $(LDLIBS)
 
 $(BUILD_DIR)/kaitaistream.o: kaitai/kaitaistream.cpp kaitai/kaitaistream.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(DEFINES) -c $< -o $@
