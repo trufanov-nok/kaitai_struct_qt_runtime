@@ -18,6 +18,7 @@ LDLIBS :=
 
 INCLUDES := -I.
 
+.PHONY: all
 all: $(BUILD_DIR) $(BUILD_DIR)/unittest
 
 $(BUILD_DIR):
