@@ -30,13 +30,6 @@ set(STRING_ENCODING_TYPE "ICONV" CACHE STRING "Set the way strings have to be en
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-# Maximum warnings emission, treat all warnings as errors
-if (MSVC)
-    add_compile_options(/W4 /WX)
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
-endif()
-
 add_library (${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY PUBLIC_HEADER ${HEADERS})
 
@@ -51,13 +44,7 @@ if(ICONV_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${ICONV_LIBRARIES})
 endif()
 
-if (STRING_ENCODING_TYPE STREQUAL "ICONV")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE -DKS_STR_ENCODING_ICONV)
-elseif (STRING_ENCODING_TYPE STREQUAL "NONE")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE -DKS_STR_ENCODING_NONE)
-else()
-    # User action requested
-endif()
+include(Common.cmake)
 
 install(TARGETS ${PROJECT_NAME}
     ARCHIVE DESTINATION lib
