@@ -1,5 +1,5 @@
-project (kaitai_struct_cpp_stl_runtime CXX)
 cmake_minimum_required (VERSION 3.3)
+project (kaitai_struct_cpp_stl_runtime CXX)
 enable_testing()
 
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -26,7 +26,7 @@ set (SOURCES
     kaitai/kaitaistream.cpp
 )
 
-set(STRING_ENCODING_TYPE "ICONV" CACHE STRING "Set the way strings have to be encoded (ICONV|NONE|...)")
+set(STRING_ENCODING_TYPE "ICONV" CACHE STRING "Set the way strings have to be encoded (ICONV|WIN32API|NONE|...)")
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
