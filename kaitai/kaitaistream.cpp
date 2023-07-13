@@ -635,9 +635,8 @@ uint8_t kaitai::kstream::byte_array_max(const std::string val) {
 #include <iconv.h>
 #include <cerrno>
 #include <stdexcept>
-#include "kaitaistream.h"
 
-std::string kaitai::kstream::bytes_to_str(const std::string src, const char* src_enc) {
+std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src_enc) {
     iconv_t cd = iconv_open(KS_STR_DEFAULT_ENCODING, src_enc);
 
     if (cd == (iconv_t)-1) {
@@ -656,7 +655,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char* src
     std::string dst(dst_len, ' ');
     size_t dst_left = dst_len;
 
-    // NB: this should be const char*, but for some reason iconv() requires non-const in its 2nd argument,
+    // NB: this should be const char *, but for some reason iconv() requires non-const in its 2nd argument,
     // so we force it with a cast.
     char *src_ptr = const_cast<char*>(src.data());
     char *dst_ptr = &dst[0];
@@ -694,7 +693,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char* src
     return dst;
 }
 #elif defined(KS_STR_ENCODING_NONE)
-std::string kaitai::kstream::bytes_to_str(const std::string src, const char* src_enc) {
+std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src_enc) {
     return src;
 }
 #elif defined(KS_STR_ENCODING_WIN32API)
@@ -704,7 +703,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char* src
 // Unbreak std::numeric_limits<T>::max, as otherwise MSVC substitutes "useful" max() macro.
 #undef max
 
-int kaitai::kstream::encoding_to_win_codepage(const char* src_enc) {
+int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
     std::string enc(src_enc);
     if (enc == "UTF-8") {
         return CP_UTF8;
@@ -759,7 +758,7 @@ int kaitai::kstream::encoding_to_win_codepage(const char* src_enc) {
     return KAITAI_CP_UNSUPPORTED;
 }
 
-std::string kaitai::kstream::bytes_to_str(const std::string src, const char* src_enc) {
+std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src_enc) {
     // Step 1: convert encoding name to codepage number
     int codepage = encoding_to_win_codepage(src_enc);
     return bytes_to_str(src, codepage);
@@ -796,7 +795,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
         utf16_len = src_len / 2;
 
         utf16 = std::wstring(utf16_len, L'\0');
-        for (int i = 0; i < utf16_len; i++) {
+        for (int32_t i = 0; i < utf16_len; i++) {
             utf16[i] = (static_cast<uint8_t>(src[i * 2]) << 8) | static_cast<uint8_t>(src[i * 2 + 1]);
         }
         break;

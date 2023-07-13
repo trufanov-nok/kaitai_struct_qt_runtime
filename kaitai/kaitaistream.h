@@ -165,7 +165,7 @@ public:
 
     static std::string bytes_strip_right(std::string src, char pad_byte);
     static std::string bytes_terminate(std::string src, char term, bool include);
-    static std::string bytes_to_str(const std::string src, const char* src_enc);
+    static std::string bytes_to_str(const std::string src, const char *src_enc);
 
     //@}
 
@@ -334,7 +334,7 @@ private:
      * @return Windows codepage number or member of KAITAI_CP_* enum.
      * @ref https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
      */
-    static int encoding_to_win_codepage(const char* src_enc);
+    static int encoding_to_win_codepage(const char *src_enc);
 
     /**
      * Converts bytes packed in std::string into a UTF-8 string, based on given source encoding indicated by `codepage`.
