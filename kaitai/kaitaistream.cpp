@@ -774,7 +774,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
         return src;
     }
 
-    // Step 2: convert bytes to UTF16 ("wide char") string
+    // Step 2: convert bytes to UTF-16 ("wide char") string
     std::wstring utf16;
     int32_t utf16_len;
     int32_t src_len;
@@ -786,12 +786,12 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
 
     switch (codepage) {
     case KAITAI_CP_UTF16LE:
-        // If our source is already UTF16LE, just copy it
+        // If our source is already UTF-16LE, just copy it
         utf16_len = src_len / 2;
         utf16 = std::wstring((wchar_t*)src.c_str(), utf16_len);
         break;
     case KAITAI_CP_UTF16BE:
-        // If our source is in UTF16BE, convert it to UTF16LE by swapping bytes
+        // If our source is in UTF-16BE, convert it to UTF-16LE by swapping bytes
         utf16_len = src_len / 2;
 
         utf16 = std::wstring(utf16_len, L'\0');
@@ -800,28 +800,28 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
         }
         break;
     default:
-        // Calculate the length of the UTF16 string
+        // Calculate the length of the UTF-16 string
         utf16_len = MultiByteToWideChar(codepage, 0, src.c_str(), src_len, 0, 0);
         if (utf16_len == 0) {
             throw std::runtime_error("bytes_to_str: MultiByteToWideChar length calculation error");
         }
 
-        // Convert to UTF16 string
+        // Convert to UTF-16 string
         utf16 = std::wstring(utf16_len, L'\0');
         if (MultiByteToWideChar(codepage, 0, src.c_str(), src_len, &utf16[0], utf16_len) == 0) {
             throw std::runtime_error("bytes_to_str: MultiByteToWideChar conversion error");
         }
     }
 
-    // Step 3: convert UTF16 string to UTF8 string
+    // Step 3: convert UTF-16 string to UTF-8 string
 
-    // Calculate the length of the UTF8 string
+    // Calculate the length of the UTF-8 string
     int utf8_len = WideCharToMultiByte(CP_UTF8, 0, &utf16[0], utf16_len, 0, 0, 0, 0);
     if (utf8_len == 0) {
         throw std::runtime_error("bytes_to_str: WideCharToMultiByte length calculation error");
     }
 
-    // Convert to UTF8 string
+    // Convert to UTF-8 string
     std::string utf8(utf8_len, '\0');
     if (WideCharToMultiByte(CP_UTF8, 0, &utf16[0], utf16_len, &utf8[0], utf8_len, 0, 0) == 0) {
         throw std::runtime_error("bytes_to_str: WideCharToMultiByte conversion error");
