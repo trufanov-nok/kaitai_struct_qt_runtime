@@ -165,7 +165,7 @@ public:
 
     static std::string bytes_strip_right(std::string src, char pad_byte);
     static std::string bytes_terminate(std::string src, char term, bool include);
-    static std::string bytes_to_str(std::string src, std::string src_enc);
+    static std::string bytes_to_str(const std::string src, const char *src_enc);
 
     //@}
 
@@ -318,6 +318,32 @@ private:
     void exceptions_enable() const;
 
     static void unsigned_to_decimal(uint64_t number, char *buffer);
+
+#ifdef KS_STR_ENCODING_WIN32API
+    enum {
+        KAITAI_CP_UNSUPPORTED = -1,
+        KAITAI_CP_UTF16LE = -2,
+        KAITAI_CP_UTF16BE = -3,
+    };
+
+    /**
+     * Converts string name of the encoding into a Windows codepage number. We extend standard Windows codepage list
+     * with a few special meanings (see KAITAI_CP_* enum), reserving negative values of integer for that.
+     * @param src_enc string name of the encoding; this should match canonical name of the encoding as per discussion
+     *     in https://github.com/kaitai-io/kaitai_struct/issues/116
+     * @return Windows codepage number or member of KAITAI_CP_* enum.
+     * @ref https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
+     */
+    static int encoding_to_win_codepage(const char *src_enc);
+
+    /**
+     * Converts bytes packed in std::string into a UTF-8 string, based on given source encoding indicated by `codepage`.
+     * @param src bytes to be converted
+     * @param codepage Windows codepage number or member of KAITAI_CP_* enum.
+     * @return UTF-8 string
+     */
+    static std::string bytes_to_str(const std::string src, int codepage);
+#endif
 
     static const int ZLIB_BUF_SIZE = 128 * 1024;
 };
