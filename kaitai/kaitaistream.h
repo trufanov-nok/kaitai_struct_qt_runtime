@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <limits>
+#include <stdexcept>
+#include <errno.h>
 
 namespace kaitai {
 
@@ -285,6 +287,16 @@ public:
         return std::string(buf);
     }
 
+    /**
+     * Converts string `str` to an integer value. Throws an exception if the
+     * string is not a valid integer.
+     *
+     * This one is supposed to mirror `std::stoll()` (which is available only
+     * since C++11) in older C++ implementations.
+     *
+     * @param str String to convert
+     * @param base Base of the integer (default: 10)
+     */
     static int64_t string_to_int(const std::string& str, int base = 10) {
         char *str_end;
         int64_t res = strtol(str.c_str(), &str_end, base);
