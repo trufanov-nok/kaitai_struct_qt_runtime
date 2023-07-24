@@ -132,6 +132,28 @@ TEST(KaitaiStreamTest, string_to_int_base16)
     EXPECT_EQ(kaitai::kstream::string_to_int("4a7b9f", 16), 4881311);
 }
 
+TEST(KaitaiStreamTest, string_to_int_out_of_range)
+{
+    // 99999999999999999999999 = 0x152d_02c7_e14a_f67f_ffff =>
+    // will need at least 77 bits to store, so should fail on 64-bit int
+    try {
+        kaitai::kstream::string_to_int("99999999999999999999999");
+        FAIL() << "Expected out_of_range exception";
+    } catch (std::out_of_range& e) {
+        EXPECT_EQ(e.what(), std::string("string_to_int"));
+    }
+}
+
+TEST(KaitaiStreamTest, string_to_int_garbage)
+{
+    try {
+        kaitai::kstream::string_to_int("123.^&@#!@");
+        FAIL() << "Expected invalid_argument exception";
+    } catch (std::invalid_argument& e) {
+        EXPECT_EQ(e.what(), std::string("string_to_int"));
+    }
+}
+
 TEST(KaitaiStreamTest, bytes_to_str_ascii)
 {
     std::string res = kaitai::kstream::bytes_to_str("Hello, world!", "ASCII");

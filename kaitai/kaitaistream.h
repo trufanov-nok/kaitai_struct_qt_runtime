@@ -294,24 +294,17 @@ public:
      * This one is supposed to mirror `std::stoll()` (which is available only
      * since C++11) in older C++ implementations.
      *
+     * Major difference between standard `std::stoll()` and `string_to_int()`
+     * is that this one does not perform any partial conversions and always
+     * throws `std::invalid_argument` if the string is not a valid integer.
+     *
      * @param str String to convert
      * @param base Base of the integer (default: 10)
+     * @throws std::invalid_argument if the string is not a valid integer
+     * @throws std::out_of_range if the integer is out of range
+     * @return Integer value of the string
      */
-    static int64_t string_to_int(const std::string& str, int base = 10) {
-        char *str_end;
-        int64_t res = strtol(str.c_str(), &str_end, base);
-
-        // Check for successful conversion and throw an exception if the entire string was not converted
-        if (str_end != str.c_str() + str.size()) {
-            throw std::invalid_argument("Invalid integer: " + str);
-        }
-
-        if (errno == ERANGE) {
-            throw std::out_of_range("Integer out of range: " + str);
-        }
-
-        return res;
-    }
+    static int64_t string_to_int(const std::string& str, int base = 10);
 
     /**
      * Reverses given string `val`, so that the first character becomes the

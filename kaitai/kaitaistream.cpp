@@ -592,6 +592,24 @@ void kaitai::kstream::unsigned_to_decimal(uint64_t number, char *buffer) {
     *buffer = '\0';
 }
 
+int64_t kaitai::kstream::string_to_int(const std::string& str, int base) {
+    char *str_end;
+
+    errno = 0;
+    int64_t res = strtoll(str.c_str(), &str_end, base);
+
+    // Check for successful conversion and throw an exception if the entire string was not converted
+    if (str_end != str.c_str() + str.size()) {
+        throw std::invalid_argument("string_to_int");
+    }
+
+    if (errno == ERANGE) {
+        throw std::out_of_range("string_to_int");
+    }
+
+    return res;
+}
+
 std::string kaitai::kstream::reverse(std::string val) {
     std::reverse(val.begin(), val.end());
 
