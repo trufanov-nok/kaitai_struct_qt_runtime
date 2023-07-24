@@ -60,6 +60,78 @@ TEST(KaitaiStreamTest, to_string_int64)
     EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<int64_t>::max()), "9223372036854775807");
 }
 
+TEST(KaitaiStreamTest, string_to_int)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("123"), 123);
+    EXPECT_EQ(kaitai::kstream::string_to_int("-123"), -123);
+}
+
+TEST(KaitaiStreamTest, string_to_int_uint8)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("0"), std::numeric_limits<uint8_t>::min());
+    EXPECT_EQ(kaitai::kstream::string_to_int("255"), std::numeric_limits<uint8_t>::max());
+}
+
+TEST(KaitaiStreamTest, string_to_int_int8)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("-128"), std::numeric_limits<int8_t>::min());
+    EXPECT_EQ(kaitai::kstream::string_to_int("127"), std::numeric_limits<int8_t>::max());
+}
+
+TEST(KaitaiStreamTest, string_to_int_uint16)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("0"), std::numeric_limits<uint16_t>::min());
+    EXPECT_EQ(kaitai::kstream::string_to_int("65535"), std::numeric_limits<uint16_t>::max());
+}
+
+TEST(KaitaiStreamTest, string_to_int_int16)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("-32768"), std::numeric_limits<int16_t>::min());
+    EXPECT_EQ(kaitai::kstream::string_to_int("32767"), std::numeric_limits<int16_t>::max());
+}
+
+TEST(KaitaiStreamTest, string_to_int_uint32)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("0"), std::numeric_limits<uint32_t>::min());
+    EXPECT_EQ(kaitai::kstream::string_to_int("4294967295"), std::numeric_limits<uint32_t>::max());
+}
+
+TEST(KaitaiStreamTest, string_to_int_int32)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("-2147483648"), std::numeric_limits<int32_t>::min());
+    EXPECT_EQ(kaitai::kstream::string_to_int("2147483647"), std::numeric_limits<int32_t>::max());
+}
+
+TEST(KaitaiStreamTest, string_to_int_int64)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("-9223372036854775808"), std::numeric_limits<int64_t>::min());
+    EXPECT_EQ(kaitai::kstream::string_to_int("9223372036854775807"), std::numeric_limits<int64_t>::max());
+}
+
+TEST(KaitaiStreamTest, string_to_int_base13)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("0", 13), 0);
+    EXPECT_EQ(kaitai::kstream::string_to_int("123", 13), 198);
+    EXPECT_EQ(kaitai::kstream::string_to_int("-123", 13), -198);
+    EXPECT_EQ(kaitai::kstream::string_to_int("4a7b9c", 13), 1788149);
+}
+
+TEST(KaitaiStreamTest, string_to_int_base8)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("0", 8), 0);
+    EXPECT_EQ(kaitai::kstream::string_to_int("123", 8), 83);
+    EXPECT_EQ(kaitai::kstream::string_to_int("-123", 8), -83);
+    EXPECT_EQ(kaitai::kstream::string_to_int("777", 8), 511);
+}
+
+TEST(KaitaiStreamTest, string_to_int_base16)
+{
+    EXPECT_EQ(kaitai::kstream::string_to_int("0", 16), 0);
+    EXPECT_EQ(kaitai::kstream::string_to_int("123", 16), 291);
+    EXPECT_EQ(kaitai::kstream::string_to_int("-123", 16), -291);
+    EXPECT_EQ(kaitai::kstream::string_to_int("4a7b9f", 16), 4881311);
+}
+
 TEST(KaitaiStreamTest, bytes_to_str_ascii)
 {
     std::string res = kaitai::kstream::bytes_to_str("Hello, world!", "ASCII");

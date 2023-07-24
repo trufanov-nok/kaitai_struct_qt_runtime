@@ -285,6 +285,22 @@ public:
         return std::string(buf);
     }
 
+    static int64_t string_to_int(const std::string& str, int base = 10) {
+        char *str_end;
+        int64_t res = strtol(str.c_str(), &str_end, base);
+
+        // Check for successful conversion and throw an exception if the entire string was not converted
+        if (str_end != str.c_str() + str.size()) {
+            throw std::invalid_argument("Invalid integer: " + str);
+        }
+
+        if (errno == ERANGE) {
+            throw std::out_of_range("Integer out of range: " + str);
+        }
+
+        return res;
+    }
+
     /**
      * Reverses given string `val`, so that the first character becomes the
      * last and the last one becomes the first. This should be used to avoid
