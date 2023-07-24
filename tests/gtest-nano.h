@@ -63,4 +63,9 @@ namespace testing {
         }                                         \
     } while (false)
 
+// Failure macro
+#define FAIL()                     \
+    ::testing::g_testPass = false; \
+    std::cerr
+
 #define RUN_ALL_TESTS() ::testing::runAllTests()
