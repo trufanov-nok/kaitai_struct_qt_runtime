@@ -1,4 +1,5 @@
 #include <kaitai/kaitaistream.h>
+#include <kaitai/exceptions.h>
 
 #if defined(__APPLE__)
 #include <machine/endian.h>
@@ -659,9 +660,9 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
 
     if (cd == (iconv_t)-1) {
         if (errno == EINVAL) {
-            throw std::runtime_error("bytes_to_str: invalid encoding pair conversion requested");
+            throw unknown_encoding(src_enc);
         } else {
-            throw std::runtime_error("bytes_to_str: error opening iconv");
+            throw bytes_to_str_error("error opening iconv");
         }
     }
 
@@ -694,8 +695,12 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
                 // of memory, thus our previous pointer "dst" will be invalid; re-point
                 // it using "dst_used".
                 dst_ptr = &dst[dst_used];
+            } else if (errno == EILSEQ) {
+                throw illegal_seq_in_encoding("EILSEQ");
+            } else if (errno == EINVAL) {
+                throw illegal_seq_in_encoding("EINVAL");
             } else {
-                throw std::runtime_error("bytes_to_str: iconv error");
+                throw bytes_to_str_error(to_string(errno));
             }
         } else {
             // conversion successful
@@ -705,7 +710,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
     }
 
     if (iconv_close(cd) != 0) {
-        throw std::runtime_error("bytes_to_str: iconv close error");
+        throw bytes_to_str_error("iconv close error");
     }
 
     return dst;
@@ -779,14 +784,13 @@ int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
 std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src_enc) {
     // Step 1: convert encoding name to codepage number
     int codepage = encoding_to_win_codepage(src_enc);
+    if (codepage == KAITAI_CP_UNSUPPORTED) {
+        throw unknown_encoding(src_enc);
+    }
     return bytes_to_str(src, codepage);
 }
 
 std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
-    if (codepage == KAITAI_CP_UNSUPPORTED) {
-        throw std::runtime_error("bytes_to_str: unsupported encoding name");
-    }
-
     // Shortcut: if we're already in UTF-8, no need to convert anything
     if (codepage == CP_UTF8) {
         return src;
@@ -797,7 +801,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
     int32_t utf16_len;
     int32_t src_len;
     if (src.length() > std::numeric_limits<int32_t>::max()) {
-        throw std::runtime_error("bytes_to_str: buffers longer than int32_t are unsupported");
+        throw bytes_to_str_error("buffers longer than int32_t are unsupported");
     } else {
         src_len = static_cast<int32_t>(src.length());
     }
@@ -805,11 +809,21 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
     switch (codepage) {
     case KAITAI_CP_UTF16LE:
         // If our source is already UTF-16LE, just copy it
+
+        if (src_len % 2 != 0) {
+            throw illegal_seq_in_encoding("incomplete");
+        }
+
         utf16_len = src_len / 2;
         utf16 = std::wstring((wchar_t*)src.c_str(), utf16_len);
         break;
     case KAITAI_CP_UTF16BE:
         // If our source is in UTF-16BE, convert it to UTF-16LE by swapping bytes
+
+        if (src_len % 2 != 0) {
+            throw illegal_seq_in_encoding("incomplete");
+        }
+
         utf16_len = src_len / 2;
 
         utf16 = std::wstring(utf16_len, L'\0');
@@ -821,13 +835,18 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
         // Calculate the length of the UTF-16 string
         utf16_len = MultiByteToWideChar(codepage, 0, src.c_str(), src_len, 0, 0);
         if (utf16_len == 0) {
-            throw std::runtime_error("bytes_to_str: MultiByteToWideChar length calculation error");
+            throw bytes_to_str_error("MultiByteToWideChar length calculation error");
         }
 
         // Convert to UTF-16 string
         utf16 = std::wstring(utf16_len, L'\0');
-        if (MultiByteToWideChar(codepage, 0, src.c_str(), src_len, &utf16[0], utf16_len) == 0) {
-            throw std::runtime_error("bytes_to_str: MultiByteToWideChar conversion error");
+        if (MultiByteToWideChar(codepage, MB_ERR_INVALID_CHARS, src.c_str(), src_len, &utf16[0], utf16_len) == 0) {
+            auto err = GetLastError();
+            if (err == ERROR_NO_UNICODE_TRANSLATION) {
+                throw illegal_seq_in_encoding("MultiByteToWideChar");
+            } else {
+                throw bytes_to_str_error("MultiByteToWideChar conversion error");
+            }
         }
     }
 
@@ -836,13 +855,18 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
     // Calculate the length of the UTF-8 string
     int utf8_len = WideCharToMultiByte(CP_UTF8, 0, &utf16[0], utf16_len, 0, 0, 0, 0);
     if (utf8_len == 0) {
-        throw std::runtime_error("bytes_to_str: WideCharToMultiByte length calculation error");
+        throw bytes_to_str_error("WideCharToMultiByte length calculation error");
     }
 
     // Convert to UTF-8 string
     std::string utf8(utf8_len, '\0');
-    if (WideCharToMultiByte(CP_UTF8, 0, &utf16[0], utf16_len, &utf8[0], utf8_len, 0, 0) == 0) {
-        throw std::runtime_error("bytes_to_str: WideCharToMultiByte conversion error");
+    if (WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, &utf16[0], utf16_len, &utf8[0], utf8_len, 0, 0) == 0) {
+        auto err = GetLastError();
+        if (err == ERROR_NO_UNICODE_TRANSLATION) {
+            throw illegal_seq_in_encoding("WideCharToMultiByte");
+        } else {
+            throw bytes_to_str_error("WideCharToMultiByte conversion error");
+        }
     }
 
     return utf8;

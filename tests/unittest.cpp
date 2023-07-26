@@ -5,6 +5,7 @@
 #endif
 
 #include "kaitai/kaitaistream.h"
+#include "kaitai/exceptions.h"
 
 TEST(KaitaiStreamTest, to_string)
 {
@@ -232,6 +233,119 @@ TEST(KaitaiStreamTest, bytes_to_str_utf16be)
         "\xE2\x96\x91"  // U+2591 LIGHT SHADE
         "\xE2\x91\xB0"  // U+2470 CIRCLED NUMBER SEVENTEEN
     );
+}
+
+TEST(KaitaiStreamTest, bytes_to_str_big_dest)
+{
+    // Prepare a string in IBM437 that is reasonably big, fill it with U+2248 ALMOST EQUAL TO character,
+    // which is just 1 byte 0xFB in IBM437.
+    const int len = 10000000;
+    std::string src(len, '\xF7');
+
+    std::string res = kaitai::kstream::bytes_to_str(src, "IBM437");
+
+    // In UTF-8, result is expected to be 3x more: every U+2248 is rendered as 3 bytes "\xE2\x89\x88"
+    EXPECT_EQ(res.length(), len * 3);
+}
+
+TEST(KaitaiStreamTest, bytes_to_str_unknown_encoding)
+{
+    try {
+        std::string res = kaitai::kstream::bytes_to_str("abc", "invalid");
+        FAIL() << "Expected unknown_encoding exception";
+    } catch (const kaitai::unknown_encoding& e) {
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: unknown encoding: `invalid`"));
+    }
+}
+
+// Different libraries have different ideas of what they consider "illegal sequence", so
+// we end up testing several case which seems to be flagged by everybody equally.
+
+TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_euc_jp_too_short)
+{
+    // In EUC-JP, 0xb0 introduces a sequence of 2 bytes in so called "code set 1", but 0xb0
+    // by itself is invalid.
+
+    try {
+        std::string res = kaitai::kstream::bytes_to_str("\xb0", "EUC-JP");
+        FAIL() << "Expected illegal_seq_in_encoding exception";
+    } catch (const kaitai::illegal_seq_in_encoding& e) {
+#ifdef KS_STR_ENCODING_ICONV
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: EINVAL"));
+#elif defined(KS_STR_ENCODING_WIN32API)
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: MultiByteToWideChar"));
+#else
+#error Unknown KS_STR_ENCODING
+#endif
+    }
+}
+
+
+TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_gb2312_too_short)
+{
+    try {
+        std::string res = kaitai::kstream::bytes_to_str("\xb0", "GB2312");
+        FAIL() << "Expected illegal_seq_in_encoding exception";
+    } catch (const kaitai::illegal_seq_in_encoding& e) {
+#ifdef KS_STR_ENCODING_ICONV
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: EINVAL"));
+#elif defined(KS_STR_ENCODING_WIN32API)
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: MultiByteToWideChar"));
+#else
+#error Unknown KS_STR_ENCODING
+#endif
+    }
+}
+
+TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_gb2312_two_bytes)
+{
+    try {
+        std::string res = kaitai::kstream::bytes_to_str("\xb0\x30", "GB2312");
+        FAIL() << "Expected illegal_seq_in_encoding exception";
+    } catch (const kaitai::illegal_seq_in_encoding& e) {
+#ifdef KS_STR_ENCODING_ICONV
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: EILSEQ"));
+#elif defined(KS_STR_ENCODING_WIN32API)
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: MultiByteToWideChar"));
+#else
+#error Unknown KS_STR_ENCODING
+#endif
+    }
+}
+
+TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_utf_16le_odd_bytes)
+{
+    // UTF-16 requires even number of bytes, so 3 bytes is incomplete UTF-16 sequence.
+    try {
+        std::string res = kaitai::kstream::bytes_to_str("abc", "UTF-16LE");
+        FAIL() << "Expected illegal_seq_in_encoding exception";
+    } catch (const kaitai::illegal_seq_in_encoding& e) {
+#ifdef KS_STR_ENCODING_ICONV
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: EINVAL"));
+#elif defined(KS_STR_ENCODING_WIN32API)
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: incomplete"));
+#else
+#error Unknown KS_STR_ENCODING
+#endif
+    }
+}
+
+TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_utf_16le_incomplete_high_surrogate)
+{
+    // UTF-16 disallows having high surrogate (any value in the range of 0xd800..0xdbff) not
+    // followed by low surrogate (any value in the range of 0xdc00..0xdfff).
+    try {
+        std::string res = kaitai::kstream::bytes_to_str("\xd8\xd8", "UTF-16LE");
+        FAIL() << "Expected illegal_seq_in_encoding exception";
+    } catch (const kaitai::illegal_seq_in_encoding& e) {
+#ifdef KS_STR_ENCODING_ICONV
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: EINVAL"));
+#elif defined(KS_STR_ENCODING_WIN32API)
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: illegal sequence: WideCharToMultiByte"));
+#else
+#error Unknown KS_STR_ENCODING
+#endif
+    }
 }
 #endif
 
