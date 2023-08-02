@@ -16,6 +16,11 @@ namespace testing {
     bool g_allPass;
 
     void InitGoogleTest(int *argc, char **argv) {
+        // Avoid warnings on unused arguments: we don't have implementation for parsing command line
+        // right now, but we might implement it in future.
+        (void) argc;
+        (void) argv;
+
         std::cout << "[----------] gtest-nano: starting up\n";
     }
 
