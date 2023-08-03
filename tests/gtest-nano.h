@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <math.h>
 
 namespace testing {
     struct TestInfo {
@@ -63,6 +64,15 @@ namespace testing {
 #define EXPECT_EQ(a, b)                           \
     do {                                          \
         if ((a) == (b)) {                         \
+        } else {                                  \
+            ::testing::g_testPass = false;        \
+        }                                         \
+    } while (false)
+
+// Floating point comparison macro
+#define EXPECT_FLOAT_EQ(a, b)                     \
+    do {                                          \
+        if (fabs(a - b) < 1e-6) {                 \
         } else {                                  \
             ::testing::g_testPass = false;        \
         }                                         \
