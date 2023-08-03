@@ -6,6 +6,53 @@
 
 #include "kaitai/kaitaistream.h"
 #include "kaitai/exceptions.h"
+#include <sstream>
+
+#define SETUP_STREAM(...)                                                            \
+    uint8_t input_bytes[] = { __VA_ARGS__ };                                         \
+    std::string input_str(reinterpret_cast<char*>(input_bytes), sizeof input_bytes); \
+    std::istringstream is(input_str);                                                \
+    kaitai::kstream ks(&is);
+
+TEST(KaitaiStreamTest, read_s1)
+{
+    SETUP_STREAM(42, 0xff, 0x80);
+    EXPECT_EQ(ks.read_s1(), 42);
+    EXPECT_EQ(ks.read_s1(), -1);
+    EXPECT_EQ(ks.read_s1(), -128);
+}
+
+TEST(KaitaiStreamTest, read_u1)
+{
+    SETUP_STREAM(42, 0xff, 0x80);
+    EXPECT_EQ(ks.read_u1(), 42);
+    EXPECT_EQ(ks.read_u1(), 255);
+    EXPECT_EQ(ks.read_u1(), 128);
+}
+
+TEST(KaitaiStreamTest, read_f4le)
+{
+    SETUP_STREAM(208, 15, 73, 64);
+    EXPECT_FLOAT_EQ(ks.read_f4le(), 3.14159);
+}
+
+TEST(KaitaiStreamTest, read_f4be)
+{
+    SETUP_STREAM(64, 73, 15, 208);
+    EXPECT_FLOAT_EQ(ks.read_f4be(), 3.14159);
+}
+
+TEST(KaitaiStreamTest, read_f8le)
+{
+    SETUP_STREAM(110, 134, 27, 240, 249, 33, 9, 64);
+    EXPECT_FLOAT_EQ(ks.read_f8le(), 3.14159);
+}
+
+TEST(KaitaiStreamTest, read_f8be)
+{
+    SETUP_STREAM(64, 9, 33, 249, 240, 27, 134, 110);
+    EXPECT_FLOAT_EQ(ks.read_f8be(), 3.14159);
+}
 
 TEST(KaitaiStreamTest, to_string)
 {
