@@ -78,6 +78,8 @@ namespace testing {
         }                                         \
     } while (false)
 
+#define EXPECT_DOUBLE_EQ(a, b) EXPECT_FLOAT_EQ(a, b)
+
 // Failure macro
 #define FAIL()                     \
     ::testing::g_testPass = false; \

@@ -33,25 +33,25 @@ TEST(KaitaiStreamTest, read_u1)
 TEST(KaitaiStreamTest, read_f4le)
 {
     SETUP_STREAM(208, 15, 73, 64);
-    EXPECT_FLOAT_EQ(ks.read_f4le(), 3.14159);
+    EXPECT_FLOAT_EQ(ks.read_f4le(), 3.14159f);
 }
 
 TEST(KaitaiStreamTest, read_f4be)
 {
     SETUP_STREAM(64, 73, 15, 208);
-    EXPECT_FLOAT_EQ(ks.read_f4be(), 3.14159);
+    EXPECT_FLOAT_EQ(ks.read_f4be(), 3.14159f);
 }
 
 TEST(KaitaiStreamTest, read_f8le)
 {
     SETUP_STREAM(110, 134, 27, 240, 249, 33, 9, 64);
-    EXPECT_FLOAT_EQ(ks.read_f8le(), 3.14159);
+    EXPECT_DOUBLE_EQ(ks.read_f8le(), 3.14159);
 }
 
 TEST(KaitaiStreamTest, read_f8be)
 {
     SETUP_STREAM(64, 9, 33, 249, 240, 27, 134, 110);
-    EXPECT_FLOAT_EQ(ks.read_f8be(), 3.14159);
+    EXPECT_DOUBLE_EQ(ks.read_f8be(), 3.14159);
 }
 
 TEST(KaitaiStreamTest, to_string)
