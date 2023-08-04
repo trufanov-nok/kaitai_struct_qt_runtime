@@ -8,10 +8,10 @@
 #include "kaitai/exceptions.h"
 #include <sstream>
 
-#define SETUP_STREAM(...)                                                            \
-    uint8_t input_bytes[] = { __VA_ARGS__ };                                         \
-    std::string input_str(reinterpret_cast<char*>(input_bytes), sizeof input_bytes); \
-    std::istringstream is(input_str);                                                \
+#define SETUP_STREAM(...)                                                                  \
+    const uint8_t input_bytes[] = { __VA_ARGS__ };                                         \
+    std::string input_str(reinterpret_cast<const char*>(input_bytes), sizeof input_bytes); \
+    std::istringstream is(input_str);                                                      \
     kaitai::kstream ks(&is);
 
 TEST(KaitaiStreamTest, read_s1)
