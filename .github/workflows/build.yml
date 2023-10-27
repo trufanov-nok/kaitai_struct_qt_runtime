@@ -9,13 +9,22 @@ on:
 jobs:
   linux:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cpp-standard:
+          - 98
+          - 11
+          - 20
     steps:
       - uses: actions/checkout@v4
       - name: restore
         run: |
           sudo apt-get install -y libgtest-dev
       - name: build
-        run: .build/build
+        env:
+          CPP_STANDARD: ${{ matrix.cpp-standard }}
+        run: .build/build -DCMAKE_CXX_STANDARD="$CPP_STANDARD" -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF
       - name: unittest
         run: .build/run-unittest
 
