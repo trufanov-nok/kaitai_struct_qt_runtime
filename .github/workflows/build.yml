@@ -10,7 +10,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: restore
         run: |
           sudo apt-get install -y libgtest-dev
@@ -30,7 +30,7 @@ jobs:
   # This one is challenging:
   #
   # * It's impossible to run git clone inside this container (as old git will use ancient protocols not supported anymore
-  #   by GitHub, and also standard `actions/checkout@v3` will depend on NodeJS/npm, which are not available in this container).
+  #   by GitHub, and also standard `actions/checkout@v4` will depend on NodeJS/npm, which are not available in this container).
   #   To work around this, we start/stop container manually and use targeted execution of specific build/run commands only
   #   inside the container, keeping git and networking stuff out.
   #
@@ -45,7 +45,7 @@ jobs:
   linux_ubuntu_7_10:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: docker pull
         run: |
           docker pull icomputer7/ancient-ubuntu-docker:gutsy
@@ -70,7 +70,7 @@ jobs:
     runs-on: windows-latest
     # NB: see https://github.com/actions/runner-images/blob/main/images/win/Windows2022-Readme.md for what's available in this image
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: restore
         run: |
           C:\vcpkg\bootstrap-vcpkg.bat
