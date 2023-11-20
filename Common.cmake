@@ -9,8 +9,9 @@ else()
 endif()
 
 # Maximum warnings emission, treat all warnings as errors
-if (MSVC)
-    add_compile_options(/W4 /WX)
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
-endif()
+#
+# This method was taken from https://www.pragmaticlinux.com/2022/07/enable-compiler-warnings-with-cmake/
+target_compile_options(${PROJECT_NAME} PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+)
