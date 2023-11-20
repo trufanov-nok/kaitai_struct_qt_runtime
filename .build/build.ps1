@@ -28,6 +28,7 @@ Push-Location $repoRoot
 $null = New-Item build -ItemType Directory -Force
 cd build
 
+$env:VERBOSE = '1'
 cmake -DCMAKE_PREFIX_PATH="$GTestPath" -DSTRING_ENCODING_TYPE="$EncodingType" ..
 cmake --build . --config Debug
 cp $GTestPath\debug\bin\*.dll tests\Debug
