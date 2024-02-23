@@ -795,6 +795,12 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
     if (codepage == CP_UTF8) {
         return src;
     }
+    // If `src` is empty, no conversion is needed either (in fact, the Win32 functions we use, i.e.
+    // MultiByteToWideChar and WideCharToMultiByte, fail with ERROR_INVALID_PARAMETER when they
+    // encounter an empty string, so we avoid this by returning early)
+    if (src.empty()) {
+        return src;
+    }
 
     // Step 2: convert bytes to UTF-16 ("wide char") string
     std::wstring utf16;

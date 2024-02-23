@@ -208,6 +208,24 @@ TEST(KaitaiStreamTest, bytes_to_str_ascii)
     EXPECT_EQ(res, "Hello, world!");
 }
 
+TEST(KaitaiStreamTest, bytes_to_str_empty_ascii)
+{
+    std::string res = kaitai::kstream::bytes_to_str("", "ASCII");
+    EXPECT_EQ(res, "");
+}
+
+TEST(KaitaiStreamTest, bytes_to_str_empty_utf16le)
+{
+    std::string res = kaitai::kstream::bytes_to_str("", "UTF-16LE");
+    EXPECT_EQ(res, "");
+}
+
+TEST(KaitaiStreamTest, bytes_to_str_empty_utf16be)
+{
+    std::string res = kaitai::kstream::bytes_to_str("", "UTF-16BE");
+    EXPECT_EQ(res, "");
+}
+
 #ifndef KS_STR_ENCODING_NONE
 TEST(KaitaiStreamTest, bytes_to_str_iso_8859_1)
 {
@@ -299,6 +317,20 @@ TEST(KaitaiStreamTest, bytes_to_str_unknown_encoding)
 {
     try {
         std::string res = kaitai::kstream::bytes_to_str("abc", "invalid");
+        FAIL() << "Expected unknown_encoding exception";
+    } catch (const kaitai::unknown_encoding& e) {
+        EXPECT_EQ(e.what(), std::string("bytes_to_str error: unknown encoding: `invalid`"));
+    }
+}
+
+// If the bytes_to_str implementation treats the empty string as a special case, it should
+// make sure to throw an unknown_encoding exception even if the input string is empty (in
+// other words, the check for an empty string and possible early successful return should
+// only be done after checking the encoding).
+TEST(KaitaiStreamTest, bytes_to_str_unknown_encoding_empty)
+{
+    try {
+        std::string res = kaitai::kstream::bytes_to_str("", "invalid");
         FAIL() << "Expected unknown_encoding exception";
     } catch (const kaitai::unknown_encoding& e) {
         EXPECT_EQ(e.what(), std::string("bytes_to_str error: unknown encoding: `invalid`"));
