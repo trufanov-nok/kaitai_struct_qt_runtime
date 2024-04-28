@@ -5,8 +5,8 @@ Runs unit tests on Windows
 
 # Standard boilerplate
 Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-$PSDefaultParameterValues['*:ErrorAction']='Stop'
+$ErrorActionPreference = 'Stop'
+$PSDefaultParameterValues['*:ErrorAction'] = 'Stop'
 
 # Go to repo root
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path

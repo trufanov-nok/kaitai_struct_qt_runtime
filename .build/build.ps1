@@ -18,19 +18,28 @@ param (
 
 # Standard boilerplate
 Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-$PSDefaultParameterValues['*:ErrorAction']='Stop'
+$ErrorActionPreference = 'Stop'
+$PSDefaultParameterValues['*:ErrorAction'] = 'Stop'
 
 # Go to repo root
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 Push-Location $repoRoot
 
-$null = New-Item build -ItemType Directory -Force
+$null = New-Item -Path build -ItemType Directory -Force
 cd build
 
 $env:VERBOSE = '1'
+
 cmake -DCMAKE_PREFIX_PATH="$GTestPath" -DSTRING_ENCODING_TYPE="$EncodingType" ..
+if ($LastExitCode -ne 0) {
+    throw "'cmake' exited with code $LastExitCode"
+}
+
 cmake --build . --config Debug
+if ($LastExitCode -ne 0) {
+    throw "'cmake --build' exited with code $LastExitCode"
+}
+
 cp $GTestPath\debug\bin\*.dll tests\Debug
 cp Debug\kaitai_struct_cpp_stl_runtime.dll tests\Debug
 
