@@ -51,6 +51,7 @@
 
 #include <algorithm> // std::reverse
 #include <cerrno> // errno, ERANGE
+#include <cstddef> // std::size_t
 #include <cstdlib> // std::strtoll
 #include <cstring> // std::memcpy
 #include <ios> // std::streamsize
@@ -477,7 +478,7 @@ std::string kaitai::kstream::read_bytes_full() {
     std::istream::pos_type p1 = m_io->tellg();
     m_io->seekg(0, std::istream::end);
     std::istream::pos_type p2 = m_io->tellg();
-    size_t len = p2 - p1;
+    std::size_t len = p2 - p1;
 
     // Note: this requires a std::string to be backed with a
     // contiguous buffer. Officially, it's a only requirement since
@@ -548,22 +549,22 @@ std::string kaitai::kstream::bytes_terminate(std::string src, char term, bool in
 // ========================================================================
 
 std::string kaitai::kstream::process_xor_one(std::string data, uint8_t key) {
-    size_t len = data.length();
+    std::size_t len = data.length();
     std::string result(len, ' ');
 
-    for (size_t i = 0; i < len; i++)
+    for (std::size_t i = 0; i < len; i++)
         result[i] = data[i] ^ key;
 
     return result;
 }
 
 std::string kaitai::kstream::process_xor_many(std::string data, std::string key) {
-    size_t len = data.length();
-    size_t kl = key.length();
+    std::size_t len = data.length();
+    std::size_t kl = key.length();
     std::string result(len, ' ');
 
-    size_t ki = 0;
-    for (size_t i = 0; i < len; i++) {
+    std::size_t ki = 0;
+    for (std::size_t i = 0; i < len; i++) {
         result[i] = data[i] ^ key[ki];
         ki++;
         if (ki >= kl)
@@ -574,10 +575,10 @@ std::string kaitai::kstream::process_xor_many(std::string data, std::string key)
 }
 
 std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
-    size_t len = data.length();
+    std::size_t len = data.length();
     std::string result(len, ' ');
 
-    for (size_t i = 0; i < len; i++) {
+    for (std::size_t i = 0; i < len; i++) {
         uint8_t bits = data[i];
         result[i] = (bits << amount) | (bits >> (8 - amount));
     }
@@ -732,13 +733,13 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
         }
     }
 
-    size_t src_len = src.length();
-    size_t src_left = src_len;
+    std::size_t src_len = src.length();
+    std::size_t src_left = src_len;
 
     // Start with a buffer length of double the source length.
-    size_t dst_len = src_len * 2;
+    std::size_t dst_len = src_len * 2;
     std::string dst(dst_len, ' ');
-    size_t dst_left = dst_len;
+    std::size_t dst_left = dst_len;
 
     // NB: this should be const char *, but for some reason iconv() requires non-const in its 2nd argument,
     // so we force it with a cast.
@@ -746,13 +747,13 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
     char *dst_ptr = &dst[0];
 
     while (true) {
-        size_t res = iconv(cd, &src_ptr, &src_left, &dst_ptr, &dst_left);
+        std::size_t res = iconv(cd, &src_ptr, &src_left, &dst_ptr, &dst_left);
 
-        if (res == (size_t)-1) {
+        if (res == (std::size_t)-1) {
             if (errno == E2BIG) {
                 // dst buffer is not enough to accomodate whole string
                 // enlarge the buffer and try again
-                size_t dst_used = dst_len - dst_left;
+                std::size_t dst_used = dst_len - dst_left;
                 dst_left += dst_len;
                 dst_len += dst_len;
                 dst.resize(dst_len);
