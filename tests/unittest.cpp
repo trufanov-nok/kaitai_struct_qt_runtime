@@ -6,7 +6,13 @@
 
 #include "kaitai/kaitaistream.h"
 #include "kaitai/exceptions.h"
-#include <sstream>
+
+#include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
+
+#include <limits> // std::numeric_limits
+#include <sstream> // std::istringstream
+#include <stdexcept> // std::out_of_range, std::invalid_argument
+#include <string> // std::string
 
 #define SETUP_STREAM(...)                                                                  \
     const uint8_t input_bytes[] = { __VA_ARGS__ };                                         \

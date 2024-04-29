@@ -1,9 +1,9 @@
 // gtest-nano.h implements very minimalistic GTest-compatible API that can be used to run tests in older
 // (C++98-compatible) environments.
 
+#include <cmath>
 #include <iostream>
 #include <vector>
-#include <math.h>
 
 namespace testing {
     struct TestInfo {
@@ -72,7 +72,7 @@ namespace testing {
 // Floating point comparison macro
 #define EXPECT_FLOAT_EQ(a, b)                     \
     do {                                          \
-        if (fabs(a - b) < 1e-6) {                 \
+        if (std::fabs(a - b) < 1e-6) {            \
         } else {                                  \
             ::testing::g_testPass = false;        \
         }                                         \

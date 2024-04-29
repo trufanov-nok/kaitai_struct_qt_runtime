@@ -3,8 +3,8 @@
 
 #include <kaitai/kaitaistream.h>
 
-#include <string>
-#include <stdexcept>
+#include <stdexcept> // std::runtime_error
+#include <string> // std::string
 
 // We need to use "noexcept" in virtual destructor of our exceptions
 // subclasses. Different compilers have different ideas on how to

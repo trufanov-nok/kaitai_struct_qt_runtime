@@ -47,10 +47,18 @@
 #endif
 #endif
 
+#include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
+
+#include <algorithm> // std::reverse
+#include <cerrno> // errno, ERANGE
+#include <cstdlib> // std::strtoll
 #include <cstring> // std::memcpy
-#include <iostream>
-#include <vector>
-#include <stdexcept>
+#include <ios> // std::streamsize
+#include <istream> // std::istream
+#include <sstream> // std::stringstream, std::ostringstream
+#include <stdexcept> // std::runtime_error, std::invalid_argument, std::out_of_range
+#include <string> // std::string, std::getline
+#include <vector> // std::vector
 
 #ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 #include <type_traits> // std::enable_if, std::is_trivially_copyable, std::is_trivially_constructible
@@ -156,9 +164,9 @@ uint64_t kaitai::kstream::pos() {
 }
 
 uint64_t kaitai::kstream::size() {
-    std::iostream::pos_type cur_pos = m_io->tellg();
-    m_io->seekg(0, std::ios::end);
-    std::iostream::pos_type len = m_io->tellg();
+    std::istream::pos_type cur_pos = m_io->tellg();
+    m_io->seekg(0, std::istream::end);
+    std::istream::pos_type len = m_io->tellg();
     m_io->seekg(cur_pos);
     return len;
 }
@@ -466,9 +474,9 @@ std::string kaitai::kstream::read_bytes(std::streamsize len) {
 }
 
 std::string kaitai::kstream::read_bytes_full() {
-    std::iostream::pos_type p1 = m_io->tellg();
-    m_io->seekg(0, std::ios::end);
-    std::iostream::pos_type p2 = m_io->tellg();
+    std::istream::pos_type p1 = m_io->tellg();
+    m_io->seekg(0, std::istream::end);
+    std::istream::pos_type p2 = m_io->tellg();
     size_t len = p2 - p1;
 
     // Note: this requires a std::string to be backed with a
@@ -638,7 +646,6 @@ int kaitai::kstream::mod(int a, int b) {
     return r;
 }
 
-#include <algorithm>
 void kaitai::kstream::unsigned_to_decimal(uint64_t number, char *buffer) {
     // Implementation from https://ideone.com/nrQfA8 by Alf P. Steinbach
     // (see https://www.zverovich.net/2013/09/07/integer-to-string-conversion-in-cplusplus.html#comment-1033931478)
@@ -659,7 +666,7 @@ int64_t kaitai::kstream::string_to_int(const std::string& str, int base) {
     char *str_end;
 
     errno = 0;
-    int64_t res = strtoll(str.c_str(), &str_end, base);
+    int64_t res = std::strtoll(str.c_str(), &str_end, base);
 
     // Check for successful conversion and throw an exception if the entire string was not converted
     if (str_end != str.c_str() + str.size()) {
@@ -712,10 +719,7 @@ uint8_t kaitai::kstream::byte_array_max(const std::string val) {
 #endif
 
 #ifdef KS_STR_ENCODING_ICONV
-
 #include <iconv.h>
-#include <cerrno>
-#include <stdexcept>
 
 std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src_enc) {
     iconv_t cd = iconv_open(KS_STR_DEFAULT_ENCODING, src_enc);

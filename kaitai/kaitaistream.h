@@ -9,13 +9,14 @@
 #define KAITAI_STREAM_H_CPP11_SUPPORT
 #endif
 
-#include <istream>
-#include <sstream>
-#include <stdint.h>
-#include <sys/types.h>
-#include <limits>
-#include <stdexcept>
-#include <errno.h>
+#include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
+
+#include <ios> // std::streamsize
+#include <istream> // std::istream
+#include <limits> // std::numeric_limits
+#include <sstream> // std::istringstream
+#include <string> // std::string
+#include <type_traits> // std::enable_if, std::is_integral
 
 namespace kaitai {
 
