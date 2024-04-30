@@ -11,7 +11,7 @@
 // achieve that: C++98 compilers prefer `throw()`, C++11 and later
 // use `noexcept`. We define KS_NOEXCEPT macro for that.
 
-#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 #define KS_NOEXCEPT noexcept
 #else
 #define KS_NOEXCEPT throw()
