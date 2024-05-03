@@ -19,9 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: install GoogleTest
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtest-dev
+        run: .build/install-gtest
       - name: install include-what-you-use (iwyu)
         # NB: https://packages.ubuntu.com/jammy/iwyu apparently doesn't declare the `libclang-common-XXX-dev` package it
         # needs as a dependency (without it, `include-what-you-use` fails with "fatal error: 'stddef.h' file not found"
@@ -32,7 +30,9 @@ jobs:
         # want to update to it, we'll have to change this hardcoded version manually and update the
         # `libclang-common-XXX-dev` version accordingly (see
         # https://github.com/include-what-you-use/include-what-you-use/blob/master/README.md#clang-compatibility).
-        run: sudo apt-get install -y iwyu=8.17-1 libclang-common-13-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iwyu=8.17-1 libclang-common-13-dev
       - name: build
         env:
           CPP_STANDARD: ${{ matrix.cpp-standard }}
