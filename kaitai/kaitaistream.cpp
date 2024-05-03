@@ -50,13 +50,12 @@
 #include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
 
 #include <algorithm> // std::reverse
-#include <cerrno> // errno, ERANGE
-#include <cstddef> // std::size_t
-#include <cstdlib> // std::strtoll
+#include <cerrno> // errno, EINVAL, E2BIG, EILSEQ, ERANGE
+#include <cstdlib> // std::size_t, std::strtoll
 #include <cstring> // std::memcpy
 #include <ios> // std::streamsize
-#include <istream> // std::istream
-#include <sstream> // std::stringstream, std::ostringstream
+#include <istream> // std::istream  // IWYU pragma: keep
+#include <sstream> // std::stringstream, std::ostringstream  // IWYU pragma: keep
 #include <stdexcept> // std::runtime_error, std::invalid_argument, std::out_of_range
 #include <string> // std::string, std::getline
 #include <vector> // std::vector
@@ -588,6 +587,14 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
 
 #ifdef KS_ZLIB
 #include <zlib.h>
+
+// This instructs include-what-you-use not to suggest `#include <zconf.h>` just because it contains
+// the definition of `Bytef`. It seems `<zconf.h>` is not a header for public use or at least it's
+// not considered necessary to include it on top of `<zlib.h>`, because official usage examples that
+// use `Bytef` only include `<zlib.h>`, see
+// https://github.com/madler/zlib/blob/0f51fb4933fc9ce18199cb2554dacea8033e7fd3/test/example.c#L71
+//
+// IWYU pragma: no_include <zconf.h>
 
 std::string kaitai::kstream::process_zlib(std::string data) {
     int ret;
