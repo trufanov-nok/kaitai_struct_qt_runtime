@@ -4,6 +4,11 @@
 // Kaitai Struct runtime API version: x.y.z = 'xxxyyyzzz' decimal
 #define KAITAI_STRUCT_VERSION 11000L
 
+// check for C++11 support - https://stackoverflow.com/a/40512515
+#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+#define KAITAI_STREAM_H_CPP11_SUPPORT
+#endif
+
 #include <istream>
 #include <sstream>
 #include <stdint.h>
