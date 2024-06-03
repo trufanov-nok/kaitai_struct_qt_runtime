@@ -13,5 +13,14 @@ endif()
 # This method was taken from https://www.pragmaticlinux.com/2022/07/enable-compiler-warnings-with-cmake/
 target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
+        -Wall -Wextra -Wpedantic -Werror
+        # See <https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wstrict-aliasing_003dn>:
+        #
+        # > Level 1: (...) it has very few false negatives. However, it has many false positives.
+        #
+        # If we encounter into false positives in the future, we can increase the level, but let's
+        # start with the most aggressive option to make sure we don't miss anything.
+        -fstrict-aliasing -Wstrict-aliasing=1
+    >
 )

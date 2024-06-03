@@ -32,9 +32,56 @@
 #include <byteswap.h>
 #endif
 
+#include <cstring> // std::memcpy
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
+#include <type_traits> // std::enable_if, std::is_trivially_copyable, std::is_trivially_constructible
+
+// Taken from https://en.cppreference.com/w/cpp/numeric/bit_cast#Possible_implementation
+// (only adjusted for C++11 compatibility)
+template<class To, class From>
+typename std::enable_if<
+        sizeof(To) == sizeof(From) &&
+        std::is_trivially_copyable<From>::value &&
+        std::is_trivially_copyable<To>::value,
+        To
+>::type
+// constexpr support needs compiler magic
+static bit_cast(const From &src) noexcept
+{
+    static_assert(std::is_trivially_constructible<To>::value,
+                  "This implementation additionally requires "
+                  "destination type to be trivially constructible");
+
+    To dst;
+    std::memcpy(&dst, &src, sizeof(To));
+    return dst;
+}
+#else
+// The following implementation of `StaticAssert` was inspired by https://stackoverflow.com/a/6765840
+
+// empty default template
+template <bool b>
+struct StaticAssert;
+
+// template specialized on true
+template <>
+struct StaticAssert<true> {};
+
+template<class To, class From>
+To
+static bit_cast(const From &src)
+{
+    StaticAssert<sizeof(To) == sizeof(From)>();
+
+    To dst;
+    std::memcpy(&dst, &src, sizeof(To));
+    return dst;
+}
+#endif
 
 kaitai::kstream::kstream(std::istream *io) {
     m_io = io;
@@ -263,7 +310,7 @@ float kaitai::kstream::read_f4be() {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_32(t);
 #endif
-    return reinterpret_cast<float &>(t);
+    return bit_cast<float>(t);
 }
 
 double kaitai::kstream::read_f8be() {
@@ -272,7 +319,7 @@ double kaitai::kstream::read_f8be() {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = bswap_64(t);
 #endif
-    return reinterpret_cast<double &>(t);
+    return bit_cast<double>(t);
 }
 
 // ........................................................................
@@ -285,7 +332,7 @@ float kaitai::kstream::read_f4le() {
 #if __BYTE_ORDER == __BIG_ENDIAN
     t = bswap_32(t);
 #endif
-    return reinterpret_cast<float &>(t);
+    return bit_cast<float>(t);
 }
 
 double kaitai::kstream::read_f8le() {
@@ -294,7 +341,7 @@ double kaitai::kstream::read_f8le() {
 #if __BYTE_ORDER == __BIG_ENDIAN
     t = bswap_64(t);
 #endif
-    return reinterpret_cast<double &>(t);
+    return bit_cast<double>(t);
 }
 
 // ========================================================================
