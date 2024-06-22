@@ -29,7 +29,7 @@
 #define __LITTLE_ENDIAN LITTLE_ENDIAN
 #else
 // At this point it's either Linux or BSD. Both have "sys/param.h", so it's safe to include
-#include <sys/param.h>
+#include <sys/param.h> // `BSD` macro  // IWYU pragma: keep
 #if defined(BSD)
 // Supposed to work on FreeBSD: https://man.freebsd.org/cgi/man.cgi?query=bswap16&manpath=FreeBSD+14.0-RELEASE
 // Supposed to work on NetBSD: https://man.netbsd.org/NetBSD-10.0/bswap16.3
