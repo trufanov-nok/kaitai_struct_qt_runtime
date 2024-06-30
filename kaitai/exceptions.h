@@ -3,15 +3,15 @@
 
 #include <kaitai/kaitaistream.h>
 
-#include <string>
-#include <stdexcept>
+#include <stdexcept> // std::runtime_error
+#include <string> // std::string
 
 // We need to use "noexcept" in virtual destructor of our exceptions
 // subclasses. Different compilers have different ideas on how to
 // achieve that: C++98 compilers prefer `throw()`, C++11 and later
 // use `noexcept`. We define KS_NOEXCEPT macro for that.
 
-#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 #define KS_NOEXCEPT noexcept
 #else
 #define KS_NOEXCEPT throw()

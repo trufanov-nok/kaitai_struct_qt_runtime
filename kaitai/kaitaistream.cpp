@@ -29,7 +29,7 @@
 #define __LITTLE_ENDIAN LITTLE_ENDIAN
 #else
 // At this point it's either Linux or BSD. Both have "sys/param.h", so it's safe to include
-#include <sys/param.h>
+#include <sys/param.h> // `BSD` macro  // IWYU pragma: keep
 #if defined(BSD)
 // Supposed to work on FreeBSD: https://man.freebsd.org/cgi/man.cgi?query=bswap16&manpath=FreeBSD+14.0-RELEASE
 // Supposed to work on NetBSD: https://man.netbsd.org/NetBSD-10.0/bswap16.3
@@ -47,10 +47,18 @@
 #endif
 #endif
 
+#include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
+
+#include <algorithm> // std::reverse
+#include <cerrno> // errno, EINVAL, E2BIG, EILSEQ, ERANGE
+#include <cstdlib> // std::size_t, std::strtoll
 #include <cstring> // std::memcpy
-#include <iostream>
-#include <vector>
-#include <stdexcept>
+#include <ios> // std::streamsize
+#include <istream> // std::istream  // IWYU pragma: keep
+#include <sstream> // std::stringstream, std::ostringstream  // IWYU pragma: keep
+#include <stdexcept> // std::runtime_error, std::invalid_argument, std::out_of_range
+#include <string> // std::string, std::getline
+#include <vector> // std::vector
 
 #ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 #include <type_traits> // std::enable_if, std::is_trivially_copyable, std::is_trivially_constructible
@@ -156,9 +164,9 @@ uint64_t kaitai::kstream::pos() {
 }
 
 uint64_t kaitai::kstream::size() {
-    std::iostream::pos_type cur_pos = m_io->tellg();
-    m_io->seekg(0, std::ios::end);
-    std::iostream::pos_type len = m_io->tellg();
+    std::istream::pos_type cur_pos = m_io->tellg();
+    m_io->seekg(0, std::istream::end);
+    std::istream::pos_type len = m_io->tellg();
     m_io->seekg(cur_pos);
     return len;
 }
@@ -466,10 +474,10 @@ std::string kaitai::kstream::read_bytes(std::streamsize len) {
 }
 
 std::string kaitai::kstream::read_bytes_full() {
-    std::iostream::pos_type p1 = m_io->tellg();
-    m_io->seekg(0, std::ios::end);
-    std::iostream::pos_type p2 = m_io->tellg();
-    size_t len = p2 - p1;
+    std::istream::pos_type p1 = m_io->tellg();
+    m_io->seekg(0, std::istream::end);
+    std::istream::pos_type p2 = m_io->tellg();
+    std::size_t len = p2 - p1;
 
     // Note: this requires a std::string to be backed with a
     // contiguous buffer. Officially, it's a only requirement since
@@ -540,22 +548,22 @@ std::string kaitai::kstream::bytes_terminate(std::string src, char term, bool in
 // ========================================================================
 
 std::string kaitai::kstream::process_xor_one(std::string data, uint8_t key) {
-    size_t len = data.length();
+    std::size_t len = data.length();
     std::string result(len, ' ');
 
-    for (size_t i = 0; i < len; i++)
+    for (std::size_t i = 0; i < len; i++)
         result[i] = data[i] ^ key;
 
     return result;
 }
 
 std::string kaitai::kstream::process_xor_many(std::string data, std::string key) {
-    size_t len = data.length();
-    size_t kl = key.length();
+    std::size_t len = data.length();
+    std::size_t kl = key.length();
     std::string result(len, ' ');
 
-    size_t ki = 0;
-    for (size_t i = 0; i < len; i++) {
+    std::size_t ki = 0;
+    for (std::size_t i = 0; i < len; i++) {
         result[i] = data[i] ^ key[ki];
         ki++;
         if (ki >= kl)
@@ -566,10 +574,10 @@ std::string kaitai::kstream::process_xor_many(std::string data, std::string key)
 }
 
 std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
-    size_t len = data.length();
+    std::size_t len = data.length();
     std::string result(len, ' ');
 
-    for (size_t i = 0; i < len; i++) {
+    for (std::size_t i = 0; i < len; i++) {
         uint8_t bits = data[i];
         result[i] = (bits << amount) | (bits >> (8 - amount));
     }
@@ -579,6 +587,14 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
 
 #ifdef KS_ZLIB
 #include <zlib.h>
+
+// This instructs include-what-you-use not to suggest `#include <zconf.h>` just because it contains
+// the definition of `Bytef`. It seems `<zconf.h>` is not a header for public use or at least it's
+// not considered necessary to include it on top of `<zlib.h>`, because official usage examples that
+// use `Bytef` only include `<zlib.h>`, see
+// https://github.com/madler/zlib/blob/0f51fb4933fc9ce18199cb2554dacea8033e7fd3/test/example.c#L71
+//
+// IWYU pragma: no_include <zconf.h>
 
 std::string kaitai::kstream::process_zlib(std::string data) {
     int ret;
@@ -638,7 +654,6 @@ int kaitai::kstream::mod(int a, int b) {
     return r;
 }
 
-#include <algorithm>
 void kaitai::kstream::unsigned_to_decimal(uint64_t number, char *buffer) {
     // Implementation from https://ideone.com/nrQfA8 by Alf P. Steinbach
     // (see https://www.zverovich.net/2013/09/07/integer-to-string-conversion-in-cplusplus.html#comment-1033931478)
@@ -659,7 +674,7 @@ int64_t kaitai::kstream::string_to_int(const std::string& str, int base) {
     char *str_end;
 
     errno = 0;
-    int64_t res = strtoll(str.c_str(), &str_end, base);
+    int64_t res = std::strtoll(str.c_str(), &str_end, base);
 
     // Check for successful conversion and throw an exception if the entire string was not converted
     if (str_end != str.c_str() + str.size()) {
@@ -712,10 +727,7 @@ uint8_t kaitai::kstream::byte_array_max(const std::string val) {
 #endif
 
 #ifdef KS_STR_ENCODING_ICONV
-
 #include <iconv.h>
-#include <cerrno>
-#include <stdexcept>
 
 std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src_enc) {
     iconv_t cd = iconv_open(KS_STR_DEFAULT_ENCODING, src_enc);
@@ -728,13 +740,13 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
         }
     }
 
-    size_t src_len = src.length();
-    size_t src_left = src_len;
+    std::size_t src_len = src.length();
+    std::size_t src_left = src_len;
 
     // Start with a buffer length of double the source length.
-    size_t dst_len = src_len * 2;
+    std::size_t dst_len = src_len * 2;
     std::string dst(dst_len, ' ');
-    size_t dst_left = dst_len;
+    std::size_t dst_left = dst_len;
 
     // NB: this should be const char *, but for some reason iconv() requires non-const in its 2nd argument,
     // so we force it with a cast.
@@ -742,13 +754,13 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
     char *dst_ptr = &dst[0];
 
     while (true) {
-        size_t res = iconv(cd, &src_ptr, &src_left, &dst_ptr, &dst_left);
+        std::size_t res = iconv(cd, &src_ptr, &src_left, &dst_ptr, &dst_left);
 
-        if (res == (size_t)-1) {
+        if (res == (std::size_t)-1) {
             if (errno == E2BIG) {
                 // dst buffer is not enough to accomodate whole string
                 // enlarge the buffer and try again
-                size_t dst_used = dst_len - dst_left;
+                std::size_t dst_used = dst_len - dst_left;
                 dst_left += dst_len;
                 dst_len += dst_len;
                 dst.resize(dst_len);

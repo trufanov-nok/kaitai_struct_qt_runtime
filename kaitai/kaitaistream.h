@@ -9,13 +9,16 @@
 #define KAITAI_STREAM_H_CPP11_SUPPORT
 #endif
 
-#include <istream>
-#include <sstream>
-#include <stdint.h>
-#include <sys/types.h>
-#include <limits>
-#include <stdexcept>
-#include <errno.h>
+#include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
+
+#include <ios> // std::streamsize, forward declaration of std::istream  // IWYU pragma: keep
+#include <limits> // std::numeric_limits
+#include <sstream> // std::istringstream  // IWYU pragma: keep
+#include <string> // std::string
+
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
+#include <type_traits> // std::enable_if, std::is_integral
+#endif
 
 namespace kaitai {
 
@@ -233,8 +236,7 @@ public:
      * since C++11) in older C++ implementations.
      */
     template<typename I>
-// check for C++11 support - https://stackoverflow.com/a/40512515
-#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
     // https://stackoverflow.com/a/27913885
     typename std::enable_if<
             std::is_integral<I>::value &&
