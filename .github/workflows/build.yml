@@ -24,11 +24,11 @@ jobs:
         # NB: https://packages.ubuntu.com/jammy/iwyu apparently doesn't declare the `libclang-common-XXX-dev` package it
         # needs as a dependency (without it, `include-what-you-use` fails with "fatal error: 'stddef.h' file not found"
         # or similar), although this problem has been reported in 7 out of 7 bug reports at
-        # https://bugs.launchpad.net/ubuntu/+source/iwyu, the oldest one is from 2014.
+        # https://bugs.launchpad.net/ubuntu/+source/iwyu, the oldest being from 2014.
         #
-        # We intentionally specify an exact version of `iwyu` here, so that when a new version becomes available and we
-        # want to update to it, we'll have to change this hardcoded version manually and update the
-        # `libclang-common-XXX-dev` version accordingly (see
+        # Therefore, we deliberately require a fixed version of `iwyu` along with the compatible
+        # `libclang-common-XXX-dev` package. When a new version becomes available and we want to update to it, we'll
+        # have to change this hardcoded version manually and bump the `libclang-common-XXX-dev` version accordingly (see
         # https://github.com/include-what-you-use/include-what-you-use/blob/master/README.md#clang-compatibility).
         run: |
           sudo apt-get update
