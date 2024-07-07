@@ -19,7 +19,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         #
         # > Level 1: (...) it has very few false negatives. However, it has many false positives.
         #
-        # If we encounter into false positives in the future, we can increase the level, but let's
+        # If we run into false positives in the future, we can increase the level, but let's
         # start with the most aggressive option to make sure we don't miss anything.
         -fstrict-aliasing -Wstrict-aliasing=1
     >
