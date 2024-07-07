@@ -61,23 +61,33 @@
 #include <vector> // std::vector
 
 #ifdef KAITAI_STREAM_H_CPP11_SUPPORT
-#include <type_traits> // std::enable_if, std::is_trivially_copyable, std::is_trivially_constructible
+#include <type_traits> // std::enable_if, std::is_trivial
 
 // Taken from https://en.cppreference.com/w/cpp/numeric/bit_cast#Possible_implementation
-// (only adjusted for C++11 compatibility)
+// (for compatibility with early C++11 compilers like `x86-64 gcc 4.9.4`, `x86-64 clang 3.6` or
+// `x86-64 icc 13.0.1`, `std::is_trivially_copyable` was replaced with `std::is_trivial` and the
+// `std::is_trivially_default_constructible` assertion was omitted)
 template<class To, class From>
 typename std::enable_if<
         sizeof(To) == sizeof(From) &&
-        std::is_trivially_copyable<From>::value &&
-        std::is_trivially_copyable<To>::value,
+        std::is_trivial<From>::value &&
+        std::is_trivial<To>::value,
         To
 >::type
 // constexpr support needs compiler magic
 static bit_cast(const From &src) noexcept
 {
-    static_assert(std::is_trivially_constructible<To>::value,
-                  "This implementation additionally requires "
-                  "destination type to be trivially constructible");
+    // // NOTE: because of `To dst;`, we need the `To` type to be trivially default constructible,
+    // // which is not true for all trivial types:
+    // // https://quuxplusone.github.io/blog/2024/04/02/trivial-but-not-default-constructible/
+    // //
+    // // However, we don't check this requirement (and just assume it's met), because
+    // // `std::is_trivially_default_constructible` is not supported by some (very) old compilers
+    // // with incomplete C++11 support (`x86-64 gcc 4.9.4`, `x86-64 clang 3.6` or
+    // // `x86-64 icc 13.0.1` at https://godbolt.org/).
+    // static_assert(std::is_trivially_default_constructible<To>::value,
+    //               "This implementation additionally requires "
+    //               "destination type to be trivially default constructible");
 
     To dst;
     std::memcpy(&dst, &src, sizeof(To));
