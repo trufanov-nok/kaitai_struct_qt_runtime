@@ -55,6 +55,7 @@
 #include <cstring> // std::memcpy
 #include <ios> // std::streamsize
 #include <istream> // std::istream  // IWYU pragma: keep
+#include <limits> // std::numeric_limits
 #include <sstream> // std::stringstream, std::ostringstream  // IWYU pragma: keep
 #include <stdexcept> // std::runtime_error, std::invalid_argument, std::out_of_range
 #include <string> // std::string, std::getline
@@ -518,6 +519,46 @@ std::string kaitai::kstream::read_bytes_term(char term, bool include, bool consu
     return result;
 }
 
+std::string kaitai::kstream::read_bytes_term_multi(std::string term, bool include, bool consume, bool eos_error) {
+    std::size_t term_len = term.length();
+    if (term_len > static_cast<std::size_t>(std::numeric_limits<std::streamsize>::max())) {
+        throw std::runtime_error("read_bytes_term_multi: terminator too long");
+    }
+    std::streamsize unit_size = static_cast<std::streamsize>(term_len);
+
+    std::string result;
+    std::string c(term_len, ' ');
+    m_io->exceptions(std::istream::badbit);
+    while (true) {
+        // Note: this requires std::string to be backed with a
+        // contiguous buffer. Officially, it's only a requirement since
+        // C++11 (C++98 and C++03 didn't have this requirement), but all
+        // major implementations had contiguous buffers anyway.
+        m_io->read(&c[0], unit_size);
+        if (m_io->eof()) {
+            m_io->clear();
+            exceptions_enable();
+            if (eos_error) {
+                throw std::runtime_error("read_bytes_term_multi: encountered EOF");
+            }
+            result.append(c, 0, static_cast<std::size_t>(m_io->gcount()));
+            return result;
+        }
+
+        if (c == term) {
+            exceptions_enable();
+            if (include)
+                result += c;
+            if (!consume)
+                m_io->seekg(-unit_size, std::istream::cur);
+
+            return result;
+        }
+
+        result += c;
+    }
+}
+
 std::string kaitai::kstream::ensure_fixed_contents(std::string expected) {
     std::string actual = read_bytes(expected.length());
 
@@ -551,6 +592,25 @@ std::string kaitai::kstream::bytes_terminate(std::string src, char term, bool in
         new_len++;
 
     return src.substr(0, new_len);
+}
+
+std::string kaitai::kstream::bytes_terminate_multi(std::string src, std::string term, bool include) {
+    std::size_t len = src.length();
+    std::size_t unit_size = term.length();
+    std::size_t last_unit_start = len > unit_size ? len - unit_size : 0;
+    for (std::size_t i = 0; i <= last_unit_start; i += unit_size) {
+        bool match = true;
+        for (std::size_t j = 0; j < unit_size; j++) {
+            if (src[i + j] != term[j]) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            return src.substr(0, i + (include ? unit_size : 0));
+        }
+    }
+    return src;
 }
 
 // ========================================================================
@@ -805,7 +865,6 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
 }
 #elif defined(KS_STR_ENCODING_WIN32API)
 #include <windows.h>
-#include <limits>
 
 // Unbreak std::numeric_limits<T>::max, as otherwise MSVC substitutes "useful" max() macro.
 #undef max

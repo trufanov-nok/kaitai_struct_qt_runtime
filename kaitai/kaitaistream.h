@@ -171,10 +171,12 @@ public:
     std::string read_bytes(std::streamsize len);
     std::string read_bytes_full();
     std::string read_bytes_term(char term, bool include, bool consume, bool eos_error);
+    std::string read_bytes_term_multi(std::string term, bool include, bool consume, bool eos_error);
     std::string ensure_fixed_contents(std::string expected);
 
     static std::string bytes_strip_right(std::string src, char pad_byte);
     static std::string bytes_terminate(std::string src, char term, bool include);
+    static std::string bytes_terminate_multi(std::string src, std::string term, bool include);
     static std::string bytes_to_str(const std::string src, const char *src_enc);
 
     //@}
