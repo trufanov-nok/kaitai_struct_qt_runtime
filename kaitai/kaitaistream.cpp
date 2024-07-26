@@ -666,7 +666,7 @@ int kaitai::kstream::mod(int a, int b) {
 
 void kaitai::kstream::unsigned_to_decimal(uint64_t number, char *buffer) {
     // Implementation from https://ideone.com/nrQfA8 by Alf P. Steinbach
-    // (see https://www.zverovich.net/2013/09/07/integer-to-string-conversion-in-cplusplus.html#comment-1033931478)
+    // (see https://vitaut.net/posts/2013/integer-to-string-conversion-in-cplusplus/)
     if (number == 0) {
         *buffer++ = '0';
     } else {
