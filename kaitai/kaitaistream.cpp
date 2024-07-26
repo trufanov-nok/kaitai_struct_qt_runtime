@@ -890,7 +890,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, int codepage) {
     std::wstring utf16;
     int32_t utf16_len;
     int32_t src_len;
-    if (src.length() > std::numeric_limits<int32_t>::max()) {
+    if (src.length() > static_cast<uint32_t>(std::numeric_limits<int32_t>::max())) {
         throw bytes_to_str_error("buffers longer than int32_t are unsupported");
     } else {
         src_len = static_cast<int32_t>(src.length());
