@@ -595,19 +595,22 @@ std::string kaitai::kstream::bytes_terminate(std::string src, char term, bool in
 }
 
 std::string kaitai::kstream::bytes_terminate_multi(std::string src, std::string term, bool include) {
-    std::size_t len = src.length();
     std::size_t unit_size = term.length();
-    std::size_t last_unit_start = len > unit_size ? len - unit_size : 0;
-    for (std::size_t i = 0; i <= last_unit_start; i += unit_size) {
-        bool match = true;
-        for (std::size_t j = 0; j < unit_size; j++) {
-            if (src[i + j] != term[j]) {
-                match = false;
-                break;
-            }
+    if (unit_size == 0) {
+        return std::string();
+    }
+    std::size_t len = src.length();
+    std::size_t i_term = 0;
+    for (std::size_t i_src = 0; i_src < len;) {
+        if (src[i_src] != term[i_term]) {
+            i_src += unit_size - i_term;
+            i_term = 0;
+            continue;
         }
-        if (match) {
-            return src.substr(0, i + (include ? unit_size : 0));
+        i_src++;
+        i_term++;
+        if (i_term == unit_size) {
+            return src.substr(0, i_src - (include ? 0 : unit_size));
         }
     }
     return src;
