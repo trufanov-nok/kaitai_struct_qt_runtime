@@ -199,6 +199,27 @@ protected:
 };
 
 /**
+ * Signals validation failure: we required "actual" value to be in
+ * the enum, but it turned out that it's not.
+ */
+template<typename T>
+class validation_not_in_enum_error: public validation_failed_error {
+public:
+    validation_not_in_enum_error(const T& actual, kstream* io, const std::string src_path):
+        validation_failed_error("not in the enum", io, src_path),
+        m_actual(actual)
+    {
+    }
+
+    // "not in the enum, got #{actual.inspect}"
+
+    virtual ~validation_not_in_enum_error() KS_NOEXCEPT {};
+
+protected:
+    const T& m_actual;
+};
+
+/**
  * Signals validation failure: we required "actual" value to match
  * the expression, but it turned out that it doesn't.
  */
