@@ -911,17 +911,29 @@ int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
     } else if (enc == "ISO-8859-9") {
         return 28599;
     } else if (enc == "ISO-8859-10") {
-        return 28600;
+        // According to <https://docs.rs/encoding_rs/latest/encoding_rs/static.ISO_8859_10.html>:
+        // > The Windows code page number for this encoding is 28600, but kernel32.dll
+        // > does not support this encoding.
+        return KAITAI_CP_UNSUPPORTED;
     } else if (enc == "ISO-8859-11") {
-        return 28601;
+        // The Windows code page 874 (`windows-874`) is the best match we can use here,
+        // although it's actually an extension of ISO-8859-11, see
+        // https://en.wikipedia.org/wiki/ISO/IEC_8859-11#Code_page_874_(Microsoft)_/_1162
+        return 874;
     } else if (enc == "ISO-8859-13") {
         return 28603;
     } else if (enc == "ISO-8859-14") {
-        return 28604;
+        // According to <https://docs.rs/encoding_rs/latest/encoding_rs/static.ISO_8859_14.html>:
+        // > The Windows code page number for this encoding is 28604, but kernel32.dll
+        // > does not support this encoding.
+        return KAITAI_CP_UNSUPPORTED;
     } else if (enc == "ISO-8859-15") {
         return 28605;
     } else if (enc == "ISO-8859-16") {
-        return 28606;
+        // According to <https://docs.rs/encoding_rs/latest/encoding_rs/static.ISO_8859_16.html>:
+        // > The Windows code page number for this encoding is 28606, but kernel32.dll
+        // > does not support this encoding.
+        return KAITAI_CP_UNSUPPORTED;
     }
 
     return KAITAI_CP_UNSUPPORTED;
