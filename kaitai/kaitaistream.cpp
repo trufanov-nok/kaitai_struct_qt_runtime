@@ -874,73 +874,76 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
 
 int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
     std::string enc(src_enc);
-    if (enc == "UTF-8") {
+    if (enc == "UTF-8")
         return CP_UTF8;
-    } else if (enc == "UTF-16BE") {
+    if (enc == "UTF-16BE")
         return KAITAI_CP_UTF16BE;
-    } else if (enc == "UTF-16LE") {
+    if (enc == "UTF-16LE")
         return KAITAI_CP_UTF16LE;
-    } else if (enc == "ISO-8859-1") {
+    if (enc == "ISO-8859-1")
         return 28591;
-    } else if (enc == "ISO-8859-2") {
+    if (enc == "ISO-8859-2")
         return 28592;
-    } else if (enc == "ISO-8859-3") {
+    if (enc == "ISO-8859-3")
         return 28593;
-    } else if (enc == "ISO-8859-4") {
+    if (enc == "ISO-8859-4")
         return 28594;
-    } else if (enc == "ISO-8859-5") {
+    if (enc == "ISO-8859-5")
         return 28595;
-    } else if (enc == "ISO-8859-6") {
+    if (enc == "ISO-8859-6")
         return 28596;
-    } else if (enc == "ISO-8859-7") {
+    if (enc == "ISO-8859-7")
         return 28597;
-    } else if (enc == "ISO-8859-8") {
+    if (enc == "ISO-8859-8")
         return 28598;
-    } else if (enc == "ISO-8859-9") {
+    if (enc == "ISO-8859-9")
         return 28599;
-    } else if (enc == "ISO-8859-10") {
+    if (enc == "ISO-8859-10") {
         // According to <https://docs.rs/encoding_rs/latest/encoding_rs/static.ISO_8859_10.html>:
         // > The Windows code page number for this encoding is 28600, but kernel32.dll
         // > does not support this encoding.
         return KAITAI_CP_UNSUPPORTED;
-    } else if (enc == "ISO-8859-11") {
+    }
+    if (enc == "ISO-8859-11") {
         // The Windows code page 874 (`windows-874`) is the best match we can use here,
         // although it's actually an extension of ISO-8859-11, see
         // https://en.wikipedia.org/wiki/ISO/IEC_8859-11#Code_page_874_(Microsoft)_/_1162
         return 874;
-    } else if (enc == "ISO-8859-13") {
+    }
+    if (enc == "ISO-8859-13")
         return 28603;
-    } else if (enc == "ISO-8859-14") {
+    if (enc == "ISO-8859-14") {
         // According to <https://docs.rs/encoding_rs/latest/encoding_rs/static.ISO_8859_14.html>:
         // > The Windows code page number for this encoding is 28604, but kernel32.dll
         // > does not support this encoding.
         return KAITAI_CP_UNSUPPORTED;
-    } else if (enc == "ISO-8859-15") {
+    }
+    if (enc == "ISO-8859-15")
         return 28605;
-    } else if (enc == "ISO-8859-16") {
+    if (enc == "ISO-8859-16") {
         // According to <https://docs.rs/encoding_rs/latest/encoding_rs/static.ISO_8859_16.html>:
         // > The Windows code page number for this encoding is 28606, but kernel32.dll
         // > does not support this encoding.
         return KAITAI_CP_UNSUPPORTED;
-    } else if (enc == "IBM437") {
-        return 437;
-    } else if (enc == "IBM850") {
-        return 850;
-    } else if (enc == "IBM866") {
-        return 866;
-    } else if (enc == "Shift_JIS") {
-        return 932;
-    } else if (enc == "GB2312") {
-        return 936;
-    } else if (enc == "Big5") {
-        return 950;
-    } else if (enc == "ASCII") {
-        return 20127;
-    } else if (enc == "EUC-JP") {
-        return 20932;
-    } else if (enc == "EUC-KR") {
-        return 51949;
     }
+    if (enc == "IBM437")
+        return 437;
+    if (enc == "IBM850")
+        return 850;
+    if (enc == "IBM866")
+        return 866;
+    if (enc == "Shift_JIS")
+        return 932;
+    if (enc == "GB2312")
+        return 936;
+    if (enc == "Big5")
+        return 950;
+    if (enc == "ASCII")
+        return 20127;
+    if (enc == "EUC-JP")
+        return 20932;
+    if (enc == "EUC-KR")
+        return 51949;
 
     return KAITAI_CP_UNSUPPORTED;
 }
