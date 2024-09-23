@@ -874,6 +874,14 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
 
 int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
     std::string enc(src_enc);
+
+    // See https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
+    //
+    // This method should handle at least all canonical encoding names listed in
+    // <https://github.com/kaitai-io/kaitai_struct_compiler/blob/5832a81a48e10c3c207748486e09bd58b9aa4000/shared/src/main/scala/io/kaitai/struct/EncodingList.scala>,
+    // preferably in the same order so that both sets of encodings can be easily compared.
+    if (enc == "ASCII")
+        return 20127;
     if (enc == "UTF-8")
         return CP_UTF8;
     if (enc == "UTF-16BE")
@@ -966,8 +974,6 @@ int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
         return 936;
     if (enc == "Big5")
         return 950;
-    if (enc == "ASCII")
-        return 20127;
     if (enc == "EUC-JP")
         return 20932;
     if (enc == "EUC-KR")
