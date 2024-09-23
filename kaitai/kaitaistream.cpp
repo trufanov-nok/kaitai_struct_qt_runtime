@@ -926,6 +926,24 @@ int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
         // > does not support this encoding.
         return KAITAI_CP_UNSUPPORTED;
     }
+    if (enc == "windows-1250")
+        return 1250;
+    if (enc == "windows-1251")
+        return 1251;
+    if (enc == "windows-1252")
+        return 1252;
+    if (enc == "windows-1253")
+        return 1253;
+    if (enc == "windows-1254")
+        return 1254;
+    if (enc == "windows-1255")
+        return 1255;
+    if (enc == "windows-1256")
+        return 1256;
+    if (enc == "windows-1257")
+        return 1257;
+    if (enc == "windows-1258")
+        return 1258;
     if (enc == "IBM437")
         return 437;
     if (enc == "IBM850")

@@ -235,7 +235,7 @@ TEST(KaitaiStreamTest, bytes_to_str_empty_utf16be)
 #ifndef KS_STR_ENCODING_NONE
 TEST(KaitaiStreamTest, bytes_to_str_iso_8859_1)
 {
-    std::string res = kaitai::kstream::bytes_to_str("\xC4\xD6\xDC\xE4\xF6\xFC\xDF\xA6", "ISO-8859-1");
+    std::string res = kaitai::kstream::bytes_to_str("\xC4\xD6\xDC\xE4\xF6\xFC\x80\x9F\xDF\xA6", "ISO-8859-1");
     EXPECT_EQ(res,
         "\xC3\x84"  // U+00C4 LATIN CAPITAL LETTER A WITH DIAERESIS
         "\xC3\x96"  // U+00D6 LATIN CAPITAL LETTER O WITH DIAERESIS
@@ -243,6 +243,8 @@ TEST(KaitaiStreamTest, bytes_to_str_iso_8859_1)
         "\xC3\xA4"  // U+00E4 LATIN SMALL LETTER A WITH DIAERESIS
         "\xC3\xB6"  // U+00F6 LATIN SMALL LETTER O WITH DIAERESIS
         "\xC3\xBC"  // U+00FC LATIN SMALL LETTER U WITH DIAERESIS
+        "\xC2\x80"  // U+0080 <Padding Character> (PAD)
+        "\xC2\x9F"  // U+009F <Application Program Command> (APC)
         "\xC3\x9F"  // U+00DF LATIN SMALL LETTER SHARP S
         "\xC2\xA6"  // U+00A6 BROKEN BAR
     );
@@ -250,7 +252,7 @@ TEST(KaitaiStreamTest, bytes_to_str_iso_8859_1)
 
 TEST(KaitaiStreamTest, bytes_to_str_iso_8859_15)
 {
-    std::string res = kaitai::kstream::bytes_to_str("\xC4\xD6\xDC\xE4\xF6\xFC\xDF\xA6", "ISO-8859-15");
+    std::string res = kaitai::kstream::bytes_to_str("\xC4\xD6\xDC\xE4\xF6\xFC\x80\x9F\xDF\xA6", "ISO-8859-15");
     EXPECT_EQ(res,
         "\xC3\x84"  // U+00C4 LATIN CAPITAL LETTER A WITH DIAERESIS
         "\xC3\x96"  // U+00D6 LATIN CAPITAL LETTER O WITH DIAERESIS
@@ -258,8 +260,21 @@ TEST(KaitaiStreamTest, bytes_to_str_iso_8859_15)
         "\xC3\xA4"  // U+00E4 LATIN SMALL LETTER A WITH DIAERESIS
         "\xC3\xB6"  // U+00F6 LATIN SMALL LETTER O WITH DIAERESIS
         "\xC3\xBC"  // U+00FC LATIN SMALL LETTER U WITH DIAERESIS
+        "\xC2\x80"  // U+0080 <Padding Character> (PAD)
+        "\xC2\x9F"  // U+009F <Application Program Command> (APC)
         "\xC3\x9F"  // U+00DF LATIN SMALL LETTER SHARP S
         "\xC5\xA0"  // U+0160 LATIN CAPITAL LETTER S WITH CARON
+    );
+}
+
+TEST(KaitaiStreamTest, bytes_to_str_windows1252)
+{
+    std::string res = kaitai::kstream::bytes_to_str("\x80\x9F\xDF\xA6", "windows-1252");
+    EXPECT_EQ(res,
+        "\xE2\x82\xAC"  // U+20AC EURO SIGN
+        "\xC5\xB8"      // U+0178 LATIN CAPITAL LETTER Y WITH DIAERESIS
+        "\xC3\x9F"      // U+00DF LATIN SMALL LETTER SHARP S
+        "\xC2\xA6"      // U+00A6 BROKEN BAR
     );
 }
 
