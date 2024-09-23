@@ -880,6 +880,16 @@ int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
         return KAITAI_CP_UTF16BE;
     if (enc == "UTF-16LE")
         return KAITAI_CP_UTF16LE;
+    if (enc == "UTF-32BE") {
+        // It has a code page number 12001 assigned to it, but it's "available only to
+        // managed applications", so we can't use it.
+        return KAITAI_CP_UNSUPPORTED;
+    }
+    if (enc == "UTF-32LE") {
+        // It has a code page number 12000 assigned to it, but it's "available only to
+        // managed applications", so we can't use it.
+        return KAITAI_CP_UNSUPPORTED;
+    }
     if (enc == "ISO-8859-1")
         return 28591;
     if (enc == "ISO-8859-2")
