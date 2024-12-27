@@ -121,7 +121,7 @@ jobs:
 
             echo '#### Testing'
             .build/run-unittest
-  netbsd_10_0:
+  netbsd_10_1:
     runs-on: ubuntu-latest
     # Doesn't use clang, has gcc:
     # c++ (nb3 20231008) 10.5.0
@@ -131,7 +131,7 @@ jobs:
       - name: Run in NetBSD
         uses: vmactions/netbsd-vm@v1
         with:
-          release: "10.0"
+          release: "10.1"
           usesh: true
           prepare: |
             /usr/sbin/pkg_add cmake googletest
