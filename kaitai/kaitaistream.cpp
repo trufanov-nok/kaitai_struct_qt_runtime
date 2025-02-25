@@ -828,8 +828,9 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
         std::size_t res = iconv(cd, &src_ptr, &src_left, &dst_ptr, &dst_left);
 
         if (res == (std::size_t)-1) {
-            if (errno == E2BIG) {
-                // dst buffer is not enough to accomodate whole string
+            const int saved_errno = errno;
+            if (saved_errno == E2BIG) {
+                // dst buffer is not enough to accommodate whole string
                 // enlarge the buffer and try again
                 std::size_t dst_used = dst_len - dst_left;
                 dst_left += dst_len;
@@ -840,12 +841,19 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
                 // of memory, thus our previous pointer "dst" will be invalid; re-point
                 // it using "dst_used".
                 dst_ptr = &dst[dst_used];
-            } else if (errno == EILSEQ) {
-                throw illegal_seq_in_encoding("EILSEQ");
-            } else if (errno == EINVAL) {
-                throw illegal_seq_in_encoding("EINVAL");
             } else {
-                throw bytes_to_str_error(to_string(errno));
+                // Try to close the conversion descriptor, ignore any errors: if `iconv_close`
+                // fails, there is nothing we can do, since we mainly want to deliver the error from
+                // `iconv` as an exception. We only call `iconv_close` here to prevent memory leaks,
+                // it is not a critical operation.
+                iconv_close(cd);
+                if (saved_errno == EILSEQ) {
+                    throw illegal_seq_in_encoding("EILSEQ");
+                }
+                if (saved_errno == EINVAL) {
+                    throw illegal_seq_in_encoding("EINVAL");
+                }
+                throw bytes_to_str_error(to_string(saved_errno));
             }
         } else {
             // conversion successful
