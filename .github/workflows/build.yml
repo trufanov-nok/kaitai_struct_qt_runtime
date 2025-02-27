@@ -94,14 +94,14 @@ jobs:
         run: .build\build.ps1 -GTestPath C:\vcpkg\installed\x64-windows
       - name: unittest
         run: .build\run-unittest.ps1
-  freebsd_14_2:
+  freebsd_14_1:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run in FreeBSD
         uses: vmactions/freebsd-vm@v1
         with:
-          release: "14.2"
+          release: "14.1"
           usesh: true
           prepare: |
             pkg install -y cmake googletest
