@@ -301,7 +301,8 @@ TEST(KaitaiStreamTest, bytes_to_str_ibm437)
 
 TEST(KaitaiStreamTest, bytes_to_str_utf16le)
 {
-    // NB: UTF16 bytes representation will have binary zeroes in the middle, so we need to convert it to std::string with explicit length
+    // NB: UTF-16 bytes representation will have binary zeroes in the middle, so we need
+    // to convert it to std::string with explicit length
     std::string res = kaitai::kstream::bytes_to_str(std::string("\x41\x00\x42\x00\x91\x25\x70\x24", 8), "UTF-16LE");
     EXPECT_EQ(res,
         "AB"
@@ -312,7 +313,8 @@ TEST(KaitaiStreamTest, bytes_to_str_utf16le)
 
 TEST(KaitaiStreamTest, bytes_to_str_utf16be)
 {
-    // NB: UTF16 bytes representation will have binary zeroes in the middle, so we need to convert it to std::string with explicit length
+    // NB: UTF-16 bytes representation will have binary zeroes in the middle, so we need
+    // to convert it to std::string with explicit length
     std::string res = kaitai::kstream::bytes_to_str(std::string("\x00\x41\x00\x42\x25\x91\x24\x70", 8), "UTF-16BE");
     EXPECT_EQ(res,
         "AB"
@@ -323,8 +325,8 @@ TEST(KaitaiStreamTest, bytes_to_str_utf16be)
 
 TEST(KaitaiStreamTest, bytes_to_str_big_dest)
 {
-    // Prepare a string in IBM437 that is reasonably big, fill it with U+2248 ALMOST EQUAL TO character,
-    // which is just 1 byte 0xFB in IBM437.
+    // Prepare a string in IBM437 that is reasonably big, fill it with U+2248 ALMOST EQUAL TO
+    // character, which is just 1 byte 0xFB in IBM437.
     const int len = 10000000;
     std::string src(len, '\xF7');
 
@@ -359,11 +361,11 @@ TEST(KaitaiStreamTest, bytes_to_str_unknown_encoding_empty)
 }
 
 // Different libraries have different ideas of what they consider "illegal sequence", so
-// we end up testing several case which seems to be flagged by everybody equally.
+// we end up testing several cases which seem to be flagged by everybody equally.
 
 TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_euc_jp_too_short)
 {
-    // In EUC-JP, 0xb0 introduces a sequence of 2 bytes in so called "code set 1", but 0xb0
+    // In EUC-JP, 0xb0 introduces a sequence of 2 bytes in so-called "code set 1", but 0xb0
     // by itself is invalid.
 
     try {
@@ -417,7 +419,7 @@ TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_gb2312_two_bytes)
 }
 #endif
 
-TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_utf_16le_odd_bytes)
+TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_utf16le_odd_bytes)
 {
     // UTF-16 requires even number of bytes, so 3 bytes is incomplete UTF-16 sequence.
     try {
@@ -434,7 +436,7 @@ TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_utf_16le_odd_bytes)
     }
 }
 
-TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_utf_16le_incomplete_high_surrogate)
+TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_utf16le_incomplete_high_surrogate)
 {
     // UTF-16 disallows having high surrogate (any value in the range of 0xd800..0xdbff) not
     // followed by low surrogate (any value in the range of 0xdc00..0xdfff).

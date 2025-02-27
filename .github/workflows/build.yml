@@ -45,12 +45,12 @@ jobs:
   # This one is challenging:
   #
   # * It's impossible to run git clone inside this container (as old git will use ancient protocols not supported anymore
-  #   by GitHub, and also standard `actions/checkout@v4` will depend on NodeJS/npm, which are not available in this container).
+  #   by GitHub, and also standard `actions/checkout@v4` will depend on Node.js/npm, which are not available in this container).
   #   To work around this, we start/stop container manually and use targeted execution of specific build/run commands only
   #   inside the container, keeping git and networking stuff out.
   #
-  # * For gcc, vast majority of C++11 features are missing from this release (many were added around GCC 4.3 and 4.4).
-  #   Some C99 features are also missing. C++98 support seems to be full-featued.
+  # * For gcc, the vast majority of C++11 features are missing from this release (many were added around GCC 4.3 and 4.4).
+  #   Some C99 features are also missing. C++98 support seems to be full-featured.
   #
   # * Modern GTest doesn't work in this environment, as GTest v1.12.x requires C++11 and modern GTest v1.13+ requires C++14.
   #   To work around this, we supply nano substitute of GTest (tests/gtest-nano.h), partially compatible with API.

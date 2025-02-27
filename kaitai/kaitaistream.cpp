@@ -490,10 +490,9 @@ std::string kaitai::kstream::read_bytes_full() {
     std::istream::pos_type p2 = m_io->tellg();
     std::size_t len = p2 - p1;
 
-    // Note: this requires a std::string to be backed with a
-    // contiguous buffer. Officially, it's a only requirement since
-    // C++11 (C++98 and C++03 didn't have this requirement), but all
-    // major implementations had contiguous buffers anyway.
+    // NOTE: this requires `std::string` to be backed by a contiguous buffer. Officially,
+    // it's only a requirement since C++11 (C++98 and C++03 didn't have this requirement),
+    // but all major implementations had contiguous buffers anyway.
     std::string result(len, ' ');
     m_io->seekg(p1);
     m_io->read(&result[0], len);
@@ -530,10 +529,9 @@ std::string kaitai::kstream::read_bytes_term_multi(std::string term, bool includ
     std::string c(term_len, ' ');
     m_io->exceptions(std::istream::badbit);
     while (true) {
-        // Note: this requires std::string to be backed with a
-        // contiguous buffer. Officially, it's only a requirement since
-        // C++11 (C++98 and C++03 didn't have this requirement), but all
-        // major implementations had contiguous buffers anyway.
+        // NOTE: this requires `std::string` to be backed by a contiguous buffer. Officially,
+        // it's only a requirement since C++11 (C++98 and C++03 didn't have this requirement),
+        // but all major implementations had contiguous buffers anyway.
         m_io->read(&c[0], unit_size);
         if (m_io->eof()) {
             m_io->clear();

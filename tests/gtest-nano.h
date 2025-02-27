@@ -18,7 +18,7 @@ namespace testing {
 
     void InitGoogleTest(int *argc, char **argv) {
         // Avoid warnings on unused arguments: we don't have implementation for parsing command line
-        // right now, but we might implement it in future.
+        // right now, but we might implement it in the future.
         (void) argc;
         (void) argv;
 

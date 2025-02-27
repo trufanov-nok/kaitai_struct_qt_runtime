@@ -185,18 +185,18 @@ public:
     //@{
 
     /**
-     * Performs a XOR processing with given data, XORing every byte of input with a single
-     * given value.
+     * Performs XOR processing on the given data, XORing each byte of the input with a
+     * single-byte key.
      * @param data data to process
-     * @param key value to XOR with
+     * @param key byte value to XOR with
      * @return processed data
      */
     static std::string process_xor_one(std::string data, uint8_t key);
 
     /**
-     * Performs a XOR processing with given data, XORing every byte of input with a key
-     * array, repeating key array many times, if necessary (i.e. if data array is longer
-     * than key array).
+     * Performs XOR processing on the given data, XORing all bytes of the input with a
+     * multi-byte key, repeating the key as many times as necessary (if the input data is
+     * longer than the key).
      * @param data data to process
      * @param key array of bytes to XOR with
      * @return processed data
