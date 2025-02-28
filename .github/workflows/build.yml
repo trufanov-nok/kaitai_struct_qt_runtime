@@ -104,7 +104,7 @@ jobs:
           release: "13.4"
           usesh: true
           prepare: |
-            pkg install -y cmake
+            pkg install -y git cmake
 
           run: |
             echo '#### System information'
