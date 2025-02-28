@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 set -ef
 
 # Build GoogleTest from source and install it
@@ -8,10 +8,14 @@ set -ef
 gtest_version_tag=v1.14.0
 
 temp_dir=$(mktemp -d)
-function cleanup {
-	rm -rf -- "$temp_dir"
+cleanup()
+{
+    rm -rf -- "$temp_dir"
 }
-trap 'cleanup' EXIT
+# NOTE: in Bash, `trap ... EXIT` would be enough (and recommended), but unfortunately we
+# cannot change the shebang to `#!/usr/bin/env bash` because FreeBSD does not have Bash
+# installed.
+trap 'cleanup' INT TERM HUP EXIT
 
 # Download
 git clone --depth 1 -b "$gtest_version_tag" -- https://github.com/google/googletest.git "$temp_dir"
@@ -23,4 +27,8 @@ cmake .. -DBUILD_GMOCK=OFF
 # Build
 make
 # Install
-sudo make install
+if command -v sudo >/dev/null 2>&1; then
+    sudo make install
+else
+    make install
+fi
