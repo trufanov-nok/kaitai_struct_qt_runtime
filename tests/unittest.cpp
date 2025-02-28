@@ -208,6 +208,23 @@ TEST(KaitaiStreamTest, string_to_int_garbage)
     }
 }
 
+// Tests a successful zlib decompression.
+TEST(KaitaiStreamTest, process_zlib_ok)
+{
+    /*
+    Python code to generate (used Python 3.10.12 and
+    `zlib.ZLIB_RUNTIME_VERSION == zlib.ZLIB_VERSION == '1.2.11'`):
+
+    ```python
+    import zlib
+    data = zlib.compress(b"Hi")
+    print(", ".join([f"0x{b:02x}" for b in data]))
+    ```
+    */
+    SETUP_STREAM(0x78, 0x9c, 0xf3, 0xc8, 0x04, 0x00, 0x00, 0xfb, 0x00, 0xb2)
+    EXPECT_EQ(kaitai::kstream::process_zlib(ks.read_bytes_full()), "Hi");
+}
+
 TEST(KaitaiStreamTest, bytes_to_str_ascii)
 {
     std::string res = kaitai::kstream::bytes_to_str("Hello, world!", "ASCII");
