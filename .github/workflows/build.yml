@@ -18,21 +18,25 @@ jobs:
           - '20'
     steps:
       - uses: actions/checkout@v4
-      - name: install GoogleTest
+      - name: Install GoogleTest
         run: .build/install-gtest
-      - name: install include-what-you-use (iwyu)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y iwyu
-      - name: build
+      - name: Update package lists
+        run: sudo apt-get update
+      - name: Install packages
+        run: sudo apt-get install -y iwyu valgrind
+      - name: Build
         env:
           CPP_STANDARD: ${{ matrix.cpp-standard }}
+          # This tells the C++ compiler to produce debugging info that Valgrind needs to report line numbers.
+          # See also https://valgrind.org/docs/manual/manual-core.html#manual-core.started
+          CMAKE_BUILD_TYPE: Debug
         run: |
           .build/build \
+            -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
             -DCMAKE_CXX_STANDARD="$CPP_STANDARD" -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF \
             -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE='include-what-you-use;-Xiwyu;--verbose=3'
-      - name: unittest
-        run: .build/run-unittest
+      - name: Run tests
+        run: .build/run-unittest --valgrind
 
   # Builds and runs tests on Ubuntu 7.10.
   # It ships with:
