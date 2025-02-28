@@ -105,7 +105,6 @@ jobs:
           usesh: true
           prepare: |
             pkg install -y cmake
-            .build/install-gtest
 
           run: |
             echo '#### System information'
@@ -116,6 +115,9 @@ jobs:
             gcc --version
             clang++ --version
             pkg info
+            
+            echo '#### Installing GoogleTest'
+            .build/install-gtest
 
             echo '#### Building'
             .build/build -DCMAKE_CXX_STANDARD=11 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF
