@@ -119,7 +119,7 @@ jobs:
             gcc --version
             clang++ --version
             pkg info
-            
+
             echo '#### Installing GoogleTest'
             .build/install-gtest
 

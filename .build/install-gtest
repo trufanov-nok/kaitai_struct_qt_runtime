@@ -10,7 +10,7 @@ gtest_version_tag=v1.14.0
 temp_dir=$(mktemp -d)
 cleanup()
 {
-    rm -rf -- "$temp_dir"
+	rm -rf -- "$temp_dir"
 }
 # NOTE: in Bash, `trap ... EXIT` would be enough (and recommended), but unfortunately we
 # cannot change the shebang to `#!/usr/bin/env bash` because FreeBSD does not have Bash
@@ -28,7 +28,7 @@ cmake .. -DBUILD_GMOCK=OFF
 make
 # Install
 if command -v sudo >/dev/null 2>&1; then
-    sudo make install
+	sudo make install
 else
-    make install
+	make install
 fi

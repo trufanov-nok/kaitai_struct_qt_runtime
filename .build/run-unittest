@@ -3,7 +3,7 @@
 if [ "$#" -eq 0 ]; then
 	use_valgrind=
 elif [ "$#" -eq 1 ] && [ "$1" = '--valgrind' ]; then
-    use_valgrind=1
+	use_valgrind=1
 else
 	echo "Usage: $0 [--valgrind]" >&2
 	exit 1
