@@ -60,7 +60,7 @@ jobs:
   #   To work around this, we supply nano substitute of GTest (tests/gtest-nano.h), partially compatible with API.
   #
   # * CMake is way too old to be usable without major rewrite of all the CMakeLists.txt to use ancient/deprecated syntax.
-  #   To work around this, we use plain GNU make(1) and supply custom Makefile.gcc4.
+  #   To work around this, we use plain GNU make(1) and supply custom gcc4.mk.
   linux_ubuntu_7_10:
     runs-on: ubuntu-latest
     steps:
@@ -77,7 +77,7 @@ jobs:
           docker exec u710 sh -c 'pwd && ls -al && apt-get update && apt-get -y --no-install-recommends install make g++'
       - name: build
         run: |
-          docker exec u710 sh -c 'make -f Makefile.gcc4'
+          docker exec u710 sh -c 'make -f gcc4.mk'
       - name: unittest
         run: |
           docker exec u710 sh -c 'build/unittest'
