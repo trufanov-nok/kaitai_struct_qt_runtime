@@ -74,7 +74,7 @@ jobs:
           docker start u710
       - name: restore
         run: |
-          docker exec u710 sh -c 'pwd && ls -al && apt-get update && apt-get -y --no-install-recommends install make g++'
+          docker exec u710 sh -c 'pwd && ls -al && apt-get update && apt-get -y --no-install-recommends install make g++ zlib1g-dev'
       - name: build
         run: |
           docker exec u710 sh -c 'make -f gcc4.mk'
