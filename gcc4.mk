@@ -11,6 +11,22 @@ OBJS := \
 	$(BUILD_DIR)/kaitaistream.o \
 	$(BUILD_DIR)/unittest.o
 
+CXXFLAGS := -std=c++98 -Wall -Wextra -pedantic
+
+# NOTE: the meaning of `<n>` values in `-Wstrict-aliasing=<n>` is different in GCC 4.1.2
+# than in recent versions of GCC. According to
+# https://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Warning-Options.html#index-Wstrict_002daliasing-246,
+# GCC 4.1.2 only has `-Wstrict-aliasing` and `-Wstrict-aliasing=2`, with
+# `-Wstrict-aliasing=2` being the option that catches more cases but has more false
+# positives. Here is an example of a case detected by `-Wstrict-aliasing=2` but not by
+# `-Wstrict-aliasing`: https://godbolt.org/z/qTahqTYTf
+#
+# In GCC 13.3, however, the most aggressive option (with the most false positives) is
+# `-Wstrict-aliasing=1`. That's why we use `-Wstrict-aliasing=2` here (because this
+# Makefile is exclusively for GCC 4), but `-Wstrict-aliasing=1` in `Common.cmake` (which
+# is used by modern compilers).
+CXXFLAGS += -fstrict-aliasing -Wstrict-aliasing=2
+
 DEFINES := -DKS_STR_ENCODING_ICONV -DKS_ZLIB -DGTEST_NANO
 
 LDFLAGS :=

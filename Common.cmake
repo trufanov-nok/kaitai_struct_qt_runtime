@@ -15,7 +15,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
         -Wall -Wextra -Wpedantic -Werror
-        # See <https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wstrict-aliasing_003dn>:
+        # See <https://gcc.gnu.org/onlinedocs/gcc-13.3.0/gcc/Warning-Options.html#index-Wstrict-aliasing_003dn>:
         #
         # > Level 1: (...) it has very few false negatives. However, it has many false positives.
         #
