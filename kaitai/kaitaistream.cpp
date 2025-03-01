@@ -668,22 +668,39 @@ std::string kaitai::kstream::process_rotate_left(std::string data, int amount) {
 // IWYU pragma: no_include <zconf.h>
 
 std::string kaitai::kstream::process_zlib(std::string data) {
-    int ret;
-
     unsigned char *src_ptr = reinterpret_cast<unsigned char *>(&data[0]);
-    std::stringstream dst_strm;
 
     z_stream strm;
     strm.zalloc = Z_NULL;
     strm.zfree = Z_NULL;
     strm.opaque = Z_NULL;
+    strm.avail_in = 0;
+    strm.next_in = Z_NULL;
 
-    ret = inflateInit(&strm);
-    if (ret != Z_OK)
-        throw std::runtime_error("process_zlib: inflateInit error");
+    // See https://www.zlib.net/manual.html#:~:text=ZEXTERN%20int%20ZEXPORT-,inflateInit,-(z_streamp%20strm)%3B
+    int ret = inflateInit(&strm);
+    if (ret != Z_OK) {
+        std::string msg;
+        switch (ret) {
+            case Z_MEM_ERROR:
+                msg = "out of memory";
+                break;
+            case Z_VERSION_ERROR:
+                msg = "zlib version mismatch";
+                break;
+            case Z_STREAM_ERROR:
+                msg = "inconsistent stream state";
+                break;
+            default:
+                msg = "unknown error (return value: " + to_string(ret) + ")";
+                break;
+        }
+        throw std::runtime_error("process_zlib: inflateInit() failed: " + msg);
+    }
 
     strm.next_in = src_ptr;
     if (data.length() > std::numeric_limits<uInt>::max()) {
+        inflateEnd(&strm); // avoid a memory leak
         throw std::length_error(
             "process_zlib: input is " + to_string(data.length()) + " bytes long, which exceeds"
                 " the maximum supported length of " + to_string(std::numeric_limits<uInt>::max()) + " bytes"
@@ -699,20 +716,63 @@ std::string kaitai::kstream::process_zlib(std::string data) {
         strm.next_out = reinterpret_cast<Bytef *>(outbuffer);
         strm.avail_out = sizeof(outbuffer);
 
-        ret = inflate(&strm, 0);
+        // See https://www.zlib.net/manual.html#:~:text=ZEXTERN%20int%20ZEXPORT-,inflate,-(z_streamp%20strm%2C%20int%20flush)%3B
+        ret = inflate(&strm, Z_NO_FLUSH);
 
-        if (outstring.size() < strm.total_out)
+        if (outstring.size() < strm.total_out) {
             outstring.append(reinterpret_cast<char *>(outbuffer), strm.total_out - outstring.size());
+        }
     } while (ret == Z_OK);
 
     if (ret != Z_STREAM_END) { // an error occurred that was not EOF
-        std::ostringstream exc_msg;
-        exc_msg << "process_zlib: error #" << ret << "): " << strm.msg;
-        throw std::runtime_error(exc_msg.str());
+        std::string msg;
+        switch (ret) {
+            // The note at https://www.zlib.net/zlib_how.html applies here as well:
+            // > For this routine, we have no idea what the dictionary is, so the
+            // > `Z_NEED_DICT` indication is converted to a `Z_DATA_ERROR`.
+            case Z_NEED_DICT:
+                msg = "preset dictionary needed";
+                break;
+            case Z_DATA_ERROR:
+                if (strm.msg) {
+                    msg = strm.msg;
+                } else {
+                    // After looking at the [zlib source
+                    // code](https://github.com/madler/zlib/blob/5a82f71ed1dfc0bec044d9702463dbdf84ea3b71/inflate.c#L590),
+                    // it seems that this never happens (if `inflate()` returns
+                    // `Z_DATA_ERROR`, it always sets a meaningful message to
+                    // `strm->msg`), but let's handle it anyway.
+                    msg = "invalid input data";
+                }
+                break;
+            case Z_STREAM_ERROR:
+                msg = "inconsistent stream state";
+                break;
+            case Z_MEM_ERROR:
+                msg = "out of memory";
+                break;
+            case Z_BUF_ERROR:
+                msg = "incomplete or truncated input data";
+                break;
+            default:
+                msg = "unknown error (return value: " + to_string(ret) + ")";
+                break;
+        }
+        inflateEnd(&strm); // avoid a memory leak
+        throw std::runtime_error("process_zlib: inflate() failed: " + msg);
     }
 
-    if (inflateEnd(&strm) != Z_OK)
-        throw std::runtime_error("process_zlib: inflateEnd error");
+    // See https://www.zlib.net/manual.html#:~:text=ZEXTERN%20int%20ZEXPORT-,inflateEnd,-(z_streamp%20strm)%3B
+    ret = inflateEnd(&strm);
+    if (ret != Z_OK) {
+        std::string msg;
+        if (ret == Z_STREAM_ERROR) {
+            msg = "inconsistent stream state";
+        } else {
+            msg = "unknown error (return value: " + to_string(ret) + ")";
+        }
+        throw std::runtime_error("process_zlib: inflateEnd() failed: " + msg);
+    }
 
     return outstring;
 }

@@ -225,6 +225,78 @@ TEST(KaitaiStreamTest, process_zlib_ok)
     EXPECT_EQ(kaitai::kstream::process_zlib(ks.read_bytes_full()), "Hi");
 }
 
+// Tests a failed zlib decompression due to the `inflate()` function returning `Z_BUF_ERROR`.
+TEST(KaitaiStreamTest, process_zlib_z_buf_error)
+{
+    // The same bytes as in the previous `process_zlib_ok` test, but truncated (without the last byte).
+    /*
+    Python code to generate (used Python 3.10.12 and
+    `zlib.ZLIB_RUNTIME_VERSION == zlib.ZLIB_VERSION == '1.2.11'`):
+
+    ```python
+    import zlib
+    data = zlib.compress(b"Hi")
+    truncated_data = data[:-1]
+    print(", ".join([f"0x{b:02x}" for b in truncated_data]))
+    ```
+    */
+    SETUP_STREAM(0x78, 0x9c, 0xf3, 0xc8, 0x04, 0x00, 0x00, 0xfb, 0x00)
+    try {
+        kaitai::kstream::process_zlib(ks.read_bytes_full());
+        FAIL() << "Expected runtime_error exception";
+    } catch (const std::runtime_error& e) {
+        EXPECT_EQ(e.what(), std::string("process_zlib: inflate() failed: incomplete or truncated input data"));
+    }
+}
+
+// Tests a failed zlib decompression due to the `inflate()` function returning `Z_DATA_ERROR`.
+TEST(KaitaiStreamTest, process_zlib_z_data_error)
+{
+    /*
+    Python code to generate (used Python 3.10.12 and
+    `zlib.ZLIB_RUNTIME_VERSION == zlib.ZLIB_VERSION == '1.2.11'`):
+
+    ```python
+    import zlib
+    data = bytearray(zlib.compress(b"Hi"))
+    # Just change the value of `FCHECK` (seehttps://www.rfc-editor.org/rfc/rfc1950.html#page-5),
+    # which will invalidate the zlib header
+    data[1] ^= 0x01
+    print(", ".join([f"0x{b:02x}" for b in data]))
+    ```
+    */
+    SETUP_STREAM(0x78, 0x9d, 0xf3, 0xc8, 0x04, 0x00, 0x00, 0xfb, 0x00, 0xb2)
+    try {
+        kaitai::kstream::process_zlib(ks.read_bytes_full());
+        FAIL() << "Expected runtime_error exception";
+    } catch (const std::runtime_error& e) {
+        EXPECT_EQ(e.what(), std::string("process_zlib: inflate() failed: incorrect header check"));
+    }
+}
+
+// Tests a failed zlib decompression due to the `inflate()` function returning `Z_NEED_DICT`.
+TEST(KaitaiStreamTest, process_zlib_z_need_dict)
+{
+    /*
+    Python code to generate (used Python 3.10.12 and
+    `zlib.ZLIB_RUNTIME_VERSION == zlib.ZLIB_VERSION == '1.2.11'`):
+
+    ```python
+    import zlib
+    co = zlib.compressobj(zdict=b"foobar")
+    data = (co.compress(b"foobar") + co.flush())
+    print(", ".join([f"0x{b:02x}" for b in data]))
+    ```
+    */
+    SETUP_STREAM(0x78, 0xbb, 0x08, 0xab, 0x02, 0x7a, 0x4b, 0x03, 0x93, 0x00, 0x08, 0xab, 0x02, 0x7a)
+    try {
+        kaitai::kstream::process_zlib(ks.read_bytes_full());
+        FAIL() << "Expected runtime_error exception";
+    } catch (const std::runtime_error& e) {
+        EXPECT_EQ(e.what(), std::string("process_zlib: inflate() failed: preset dictionary needed"));
+    }
+}
+
 TEST(KaitaiStreamTest, bytes_to_str_ascii)
 {
     std::string res = kaitai::kstream::bytes_to_str("Hello, world!", "ASCII");
