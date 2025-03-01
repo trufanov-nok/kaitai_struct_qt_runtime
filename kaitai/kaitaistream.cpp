@@ -683,7 +683,13 @@ std::string kaitai::kstream::process_zlib(std::string data) {
         throw std::runtime_error("process_zlib: inflateInit error");
 
     strm.next_in = src_ptr;
-    strm.avail_in = data.length();
+    if (data.length() > std::numeric_limits<uInt>::max()) {
+        throw std::length_error(
+            "process_zlib: input is " + to_string(data.length()) + " bytes long, which exceeds"
+                " the maximum supported length of " + to_string(std::numeric_limits<uInt>::max()) + " bytes"
+        );
+    }
+    strm.avail_in = static_cast<uInt>(data.length());
 
     unsigned char outbuffer[ZLIB_BUF_SIZE];
     std::string outstring;
