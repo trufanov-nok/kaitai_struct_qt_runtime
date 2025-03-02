@@ -225,6 +225,29 @@ TEST(KaitaiStreamTest, process_zlib_ok)
     EXPECT_EQ(kaitai::kstream::process_zlib(ks.read_bytes_full()), "Hi");
 }
 
+// It's probably not a good idea to run this test in CI because it has to allocate 4 GiB of memory.
+// That's why it is disabled (see
+// https://google.github.io/googletest/advanced.html#temporarily-disabling-tests). You can still run
+// it locally using `.build/run-unittest --valgrind -- --gtest_also_run_disabled_tests` or
+// `.build\run-unittest.ps1 --gtest_also_run_disabled_tests`.
+TEST(KaitaiStreamTest, DISABLED_process_zlib_input_too_long)
+{
+    try {
+        kaitai::kstream::process_zlib(
+            std::string(
+                static_cast<std::string::size_type>(std::numeric_limits<unsigned>::max()) + 1,
+                '\x00'
+            )
+        );
+        FAIL() << "Expected runtime_error exception";
+    } catch (const std::length_error& e) {
+        EXPECT_EQ(e.what(), std::string(
+            "process_zlib: input is 4294967296 bytes long, which exceeds"
+            " the maximum supported length of 4294967295 bytes"
+        ));
+    }
+}
+
 // Tests a failed zlib decompression due to the `inflate()` function returning `Z_BUF_ERROR`.
 TEST(KaitaiStreamTest, process_zlib_z_buf_error)
 {
