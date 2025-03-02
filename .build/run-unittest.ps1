@@ -12,12 +12,14 @@ $PSDefaultParameterValues['*:ErrorAction'] = 'Stop'
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 Push-Location $repoRoot
 
-cd build
+try {
+    cd build
 
-# Use ctest
-#ctest -C Debug --output-on-failure
+    # Use ctest
+    #ctest -C Debug --output-on-failure
 
-# Run gtest-generated binary directly, produces more detailed output
-./tests/Debug/unittest.exe
-
-Pop-Location
+    # Run gtest-generated binary directly, produces more detailed output
+    ./tests/Debug/unittest.exe
+} finally {
+    Pop-Location
+}
