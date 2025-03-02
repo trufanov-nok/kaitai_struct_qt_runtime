@@ -242,12 +242,15 @@ public:
      */
     static std::string to_string(long val);
 
+// The `long long` type is only available since C++11, so we use it only in C++11 mode.
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
     /**
      * Converts given integer `val` to a decimal string representation.
      * Should be used in place of `std::to_string(long long)` (which is available only
      * since C++11) in older C++ implementations.
      */
     static std::string to_string(long long val);
+#endif
 
     /**
      * Converts given integer `val` to a decimal string representation.
@@ -263,12 +266,15 @@ public:
      */
     static std::string to_string(unsigned long val);
 
+// The `unsigned long long` type is only available since C++11, so we use it only in C++11 mode.
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
     /**
      * Converts given integer `val` to a decimal string representation.
      * Should be used in place of `std::to_string(unsigned long long)` (which is available only
      * since C++11) in older C++ implementations.
      */
     static std::string to_string(unsigned long long val);
+#endif
 
     /**
      * Converts string `str` to an integer value. Throws an exception if the

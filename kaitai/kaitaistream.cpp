@@ -867,9 +867,11 @@ std::string kaitai::kstream::to_string(long val) {
     return to_string_signed(val);
 }
 
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 std::string kaitai::kstream::to_string(long long val) {
     return to_string_signed(val);
 }
+#endif
 
 std::string kaitai::kstream::to_string(unsigned val) {
     return to_string_unsigned(val);
@@ -879,9 +881,11 @@ std::string kaitai::kstream::to_string(unsigned long val) {
     return to_string_unsigned(val);
 }
 
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 std::string kaitai::kstream::to_string(unsigned long long val) {
     return to_string_unsigned(val);
 }
+#endif
 
 int64_t kaitai::kstream::string_to_int(const std::string& str, int base) {
     char *str_end;
