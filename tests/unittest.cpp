@@ -1,7 +1,12 @@
 #ifdef GTEST_NANO
 #include "tests/gtest-nano.h"
 #else
-#include "gtest/gtest.h"
+// These IWYU pragmas are needed for versions of GoogleTest older than 1.12,
+// see https://github.com/kaitai-io/kaitai_struct_cpp_stl_runtime/pull/72#issuecomment-2093287161
+#include "gtest/gtest.h" // IWYU pragma: keep
+// IWYU pragma: no_include <gtest/gtest-message.h>
+// IWYU pragma: no_include <gtest/gtest-test-part.h>
+// IWYU pragma: no_include "gtest/gtest_pred_impl.h"
 #endif
 
 #include "kaitai/kaitaistream.h"
