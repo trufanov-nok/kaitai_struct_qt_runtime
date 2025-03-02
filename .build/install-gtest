@@ -44,9 +44,7 @@ case $cpp_standard in
 			# least C++14, see https://github.com/google/googletest/releases/tag/v1.16.0
 			gtest_version_tag=v1.16.0
 		else
-			echo "Error: unsupported value $1 of <cpp-standard>" >&2
-			printf '\n%s\n' "$(usage)" >&2
-			exit 1
+			die "Error: unsupported value $1 of <cpp-standard>"
 		fi
 		;;
 esac
