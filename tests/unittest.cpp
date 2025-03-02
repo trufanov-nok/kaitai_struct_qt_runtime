@@ -510,8 +510,11 @@ TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_gb2312_too_short)
     }
 }
 
-#if !defined(__FreeBSD__) && !defined(__NetBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__)
+TEST(KaitaiStreamTest, DISABLED_bytes_to_str_invalid_seq_gb2312_two_bytes)
+#else
 TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_gb2312_two_bytes)
+#endif
 {
     // 0xB0 0x30 is illegal sequence in GB2312: 0xB0 must be followed by [0xA1..0xFE].
     // However, some iconv engines, namely CITRUS integrated with modern FreeBSD (10+) and NetBSD,
@@ -529,7 +532,6 @@ TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_gb2312_two_bytes)
 #endif
     }
 }
-#endif
 
 TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_utf16le_odd_bytes)
 {
