@@ -95,7 +95,9 @@ jobs:
           C:\vcpkg\bootstrap-vcpkg.bat
           C:\vcpkg\vcpkg install gtest:x64-windows zlib:x64-windows
       - name: build
-        run: .build\build.ps1 -GTestPath C:\vcpkg\installed\x64-windows
+        run: |
+          .build\build.ps1 -GTestPath C:\vcpkg\installed\x64-windows -- `
+            -DCMAKE_CXX_STANDARD=11 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF
       - name: unittest
         run: .build\run-unittest.ps1
   freebsd_14_2:
