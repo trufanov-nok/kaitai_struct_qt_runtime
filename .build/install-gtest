@@ -12,7 +12,7 @@ usage()
 {
 	echo "Usage: $0 <cpp-standard>"
 	echo
-	echo '  <cpp-standard>  C++ standard to target (supported: 98, 11, 14 and higher)'
+	echo '  <cpp-standard>  C++ standard to target (supported: 98, 11, any number between 14 and 26 inclusive)'
 }
 
 die()
@@ -39,7 +39,7 @@ case $cpp_standard in
 		gtest_version_tag=release-1.12.1
 		;;
 	*)
-		if [ "$cpp_standard" -ge 14 ]; then
+		if [ "$cpp_standard" -ge 14 ] && [ "$cpp_standard" -le 26 ]; then
 			# GoogleTest v1.16.0 (the latest version at the time of writing) requires at
 			# least C++14, see https://github.com/google/googletest/releases/tag/v1.16.0
 			gtest_version_tag=v1.16.0
