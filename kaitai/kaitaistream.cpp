@@ -853,40 +853,6 @@ std::string kaitai::kstream::to_string_unsigned(uint64_t val) {
     return std::string(&buf[buf_contents_start], sizeof(buf) - buf_contents_start);
 }
 
-// NB: the following 6 overloads are exactly the ones that
-// [`std::to_string`](https://en.cppreference.com/w/cpp/string/basic_string/to_string) has.
-// Testing has shown that they are all necessary: if you remove any of them, you will get
-// something like `error: call to 'to_string' is ambiguous` when trying to call `to_string`
-// with the integer type for which you removed the overload.
-
-std::string kaitai::kstream::to_string(int val) {
-    return to_string_signed(val);
-}
-
-std::string kaitai::kstream::to_string(long val) {
-    return to_string_signed(val);
-}
-
-#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
-std::string kaitai::kstream::to_string(long long val) {
-    return to_string_signed(val);
-}
-#endif
-
-std::string kaitai::kstream::to_string(unsigned val) {
-    return to_string_unsigned(val);
-}
-
-std::string kaitai::kstream::to_string(unsigned long val) {
-    return to_string_unsigned(val);
-}
-
-#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
-std::string kaitai::kstream::to_string(unsigned long long val) {
-    return to_string_unsigned(val);
-}
-#endif
-
 int64_t kaitai::kstream::string_to_int(const std::string& str, int base) {
     char *str_end;
 

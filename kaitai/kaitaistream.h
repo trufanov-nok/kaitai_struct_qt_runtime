@@ -228,19 +228,29 @@ public:
      */
     static int mod(int a, int b);
 
+    // NB: the following 6 overloads of `to_string` are exactly the ones that
+    // [`std::to_string`](https://en.cppreference.com/w/cpp/string/basic_string/to_string) has.
+    // Testing has shown that they are all necessary: if you remove any of them, you will get
+    // something like `error: call to 'to_string' is ambiguous` when trying to call `to_string`
+    // with the integer type for which you removed the overload.
+
     /**
      * Converts given integer `val` to a decimal string representation.
      * Should be used in place of `std::to_string(int)` (which is available only
      * since C++11) in older C++ implementations.
      */
-    static std::string to_string(int val);
+    static std::string to_string(int val) {
+        return to_string_signed(val);
+    }
 
     /**
      * Converts given integer `val` to a decimal string representation.
      * Should be used in place of `std::to_string(long)` (which is available only
      * since C++11) in older C++ implementations.
      */
-    static std::string to_string(long val);
+    static std::string to_string(long val) {
+        return to_string_signed(val);
+    }
 
 // The `long long` type is only available since C++11, so we use it only in C++11 mode.
 #ifdef KAITAI_STREAM_H_CPP11_SUPPORT
@@ -249,7 +259,9 @@ public:
      * Should be used in place of `std::to_string(long long)` (which is available only
      * since C++11) in older C++ implementations.
      */
-    static std::string to_string(long long val);
+    static std::string to_string(long long val) {
+        return to_string_signed(val);
+    }
 #endif
 
     /**
@@ -257,14 +269,18 @@ public:
      * Should be used in place of `std::to_string(unsigned)` (which is available only
      * since C++11) in older C++ implementations.
      */
-    static std::string to_string(unsigned val);
+    static std::string to_string(unsigned val) {
+        return to_string_unsigned(val);
+    }
 
     /**
      * Converts given integer `val` to a decimal string representation.
      * Should be used in place of `std::to_string(unsigned long)` (which is available only
      * since C++11) in older C++ implementations.
      */
-    static std::string to_string(unsigned long val);
+    static std::string to_string(unsigned long val) {
+        return to_string_unsigned(val);
+    }
 
 // The `unsigned long long` type is only available since C++11, so we use it only in C++11 mode.
 #ifdef KAITAI_STREAM_H_CPP11_SUPPORT
@@ -273,7 +289,9 @@ public:
      * Should be used in place of `std::to_string(unsigned long long)` (which is available only
      * since C++11) in older C++ implementations.
      */
-    static std::string to_string(unsigned long long val);
+    static std::string to_string(unsigned long long val) {
+        return to_string_unsigned(val);
+    }
 #endif
 
     /**
