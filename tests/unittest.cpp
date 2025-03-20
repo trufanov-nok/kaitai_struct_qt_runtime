@@ -350,7 +350,7 @@ TEST(KaitaiStreamTest, process_zlib_z_data_error)
     ```python
     import zlib
     data = bytearray(zlib.compress(b"Hi"))
-    # Just change the value of `FCHECK` (seehttps://www.rfc-editor.org/rfc/rfc1950.html#page-5),
+    # Just change the value of `FCHECK` (see https://www.rfc-editor.org/rfc/rfc1950.html#page-5),
     # which will invalidate the zlib header
     data[1] ^= 0x01
     print(", ".join([f"0x{b:02x}" for b in data]))
