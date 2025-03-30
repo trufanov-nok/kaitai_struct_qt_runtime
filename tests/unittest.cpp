@@ -154,8 +154,6 @@ TEST(KaitaiStreamTest, to_string_long)
 #pragma warning(pop)
 #endif
 
-// The `long long` type is only available since C++11, so we use it only in C++11 mode.
-#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 TEST(KaitaiStreamTest, to_string_unsigned_long_long)
 {
     EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<unsigned long long>::min()), "0");
@@ -167,20 +165,6 @@ TEST(KaitaiStreamTest, to_string_long_long)
     EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<long long>::min()), "-9223372036854775808");
     EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<long long>::max()), "9223372036854775807");
 }
-#else
-// Make sure we still support 64-bit integers.
-TEST(KaitaiStreamTest, to_string_uint64)
-{
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<uint64_t>::min()), "0");
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<uint64_t>::max()), "18446744073709551615");
-}
-
-TEST(KaitaiStreamTest, to_string_int64)
-{
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<int64_t>::min()), "-9223372036854775808");
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<int64_t>::max()), "9223372036854775807");
-}
-#endif
 
 TEST(KaitaiStreamTest, string_to_int)
 {
@@ -578,15 +562,17 @@ TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_gb2312_too_short)
     }
 }
 
-#if defined(__FreeBSD__) || defined(__NetBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 TEST(KaitaiStreamTest, DISABLED_bytes_to_str_invalid_seq_gb2312_two_bytes)
 #else
 TEST(KaitaiStreamTest, bytes_to_str_invalid_seq_gb2312_two_bytes)
 #endif
 {
-    // 0xB0 0x30 is illegal sequence in GB2312: 0xB0 must be followed by [0xA1..0xFE].
-    // However, some iconv engines, namely CITRUS integrated with modern FreeBSD (10+) and NetBSD,
-    // are not considering this as error and thus not returning EILSEQ.
+    // 0xB0 0x30 is illegal sequence in GB2312: 0xB0 must be followed by [0xA1..0xFE]. However,
+    // some iconv engines, namely CITRUS integrated with modern FreeBSD (10+) and NetBSD, are
+    // not considering this an error and thus not returning EILSEQ. Iconv preinstalled in the
+    // GitHub Actions `macos-14` runner image does not consider this an error either.
+    //
     try {
         std::string res = kaitai::kstream::bytes_to_str("\xb0\x30", "GB2312");
         FAIL() << "Expected illegal_seq_in_encoding exception";
