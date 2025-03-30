@@ -20,7 +20,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         # practice it is usually supported even by ancient compilers with very limited C++11
         # support. And we already unconditionally require `uint64_t`, so it would be strange if
         # the compiler supported `uint64_t` and not `long long`.
-        -Wno-error=long-long
+        -Wno-long-long
 
         # See <https://gcc.gnu.org/onlinedocs/gcc-13.3.0/gcc/Warning-Options.html#index-Wstrict-aliasing_003dn>:
         #
