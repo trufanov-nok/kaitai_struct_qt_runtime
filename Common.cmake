@@ -15,6 +15,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
         -Wall -Wextra -Wpedantic -Werror
+
+        # We're using the `long long` type intentionally. Although it's not part of C++98, in
+        # practice it is usually supported even by ancient compilers with very limited C++11
+        # support. And we already unconditionally require `uint64_t`, so it would be strange if
+        # the compiler supported `uint64_t` and not `long long`.
+        -Wno-error=long-long
+
         # See <https://gcc.gnu.org/onlinedocs/gcc-13.3.0/gcc/Warning-Options.html#index-Wstrict-aliasing_003dn>:
         #
         # > Level 1: (...) it has very few false negatives. However, it has many false positives.

@@ -13,6 +13,7 @@
 
 #include <ios> // std::streamsize, forward declaration of std::istream  // IWYU pragma: keep
 #include <cstddef> // std::size_t
+#include <climits> // LLONG_MAX, ULLONG_MAX
 #include <sstream> // std::istringstream  // IWYU pragma: keep
 #include <string> // std::string
 
@@ -252,8 +253,11 @@ public:
         return to_string_signed(val);
     }
 
-// The `long long` type is only available since C++11, so we use it only in C++11 mode.
-#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
+// The `long long` type is technically available only since C++11. It is usually
+// supported even by ancient compilers that have very limited C++11 support, but we can
+// still check if the `LLONG_MAX` macro is defined (it seems very unlikely that it is not,
+// though).
+#ifdef LLONG_MAX
     /**
      * Converts given integer `val` to a decimal string representation.
      * Should be used in place of `std::to_string(long long)` (which is available only
@@ -282,8 +286,11 @@ public:
         return to_string_unsigned(val);
     }
 
-// The `unsigned long long` type is only available since C++11, so we use it only in C++11 mode.
-#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
+// The `unsigned long long` type is technically available only since C++11. It is usually
+// supported even by ancient compilers that have very limited C++11 support, but we can
+// still check if the `LLONG_MAX` macro is defined (it seems very unlikely that it is not,
+// though).
+#ifdef ULLONG_MAX
     /**
      * Converts given integer `val` to a decimal string representation.
      * Should be used in place of `std::to_string(unsigned long long)` (which is available only

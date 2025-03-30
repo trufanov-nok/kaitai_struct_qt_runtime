@@ -13,6 +13,12 @@ OBJS := \
 
 CXXFLAGS := -std=c++98 -Wall -Wextra -pedantic
 
+# `-pedantic` enables `-Wlong-long`, which for some reason turns into
+# `error: ISO C++ does not support 'long long'`, even though we don't use `-Werror`. Since
+# we're using `long long` intentionally, we suppress this error using `-Wno-long-long`
+# (see https://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Warning-Options.html#index-Wlong_002dlong-305).
+CXXFLAGS += -Wno-long-long
+
 # NOTE: the meaning of `<n>` values in `-Wstrict-aliasing=<n>` is different in GCC 4.1.2
 # than in recent versions of GCC. According to
 # https://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Warning-Options.html#index-Wstrict_002daliasing-246,

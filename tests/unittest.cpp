@@ -154,8 +154,6 @@ TEST(KaitaiStreamTest, to_string_long)
 #pragma warning(pop)
 #endif
 
-// The `long long` type is only available since C++11, so we use it only in C++11 mode.
-#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 TEST(KaitaiStreamTest, to_string_unsigned_long_long)
 {
     EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<unsigned long long>::min()), "0");
@@ -167,20 +165,6 @@ TEST(KaitaiStreamTest, to_string_long_long)
     EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<long long>::min()), "-9223372036854775808");
     EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<long long>::max()), "9223372036854775807");
 }
-#else
-// Make sure we still support 64-bit integers.
-TEST(KaitaiStreamTest, to_string_uint64)
-{
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<uint64_t>::min()), "0");
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<uint64_t>::max()), "18446744073709551615");
-}
-
-TEST(KaitaiStreamTest, to_string_int64)
-{
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<int64_t>::min()), "-9223372036854775808");
-    EXPECT_EQ(kaitai::kstream::to_string(std::numeric_limits<int64_t>::max()), "9223372036854775807");
-}
-#endif
 
 TEST(KaitaiStreamTest, string_to_int)
 {
