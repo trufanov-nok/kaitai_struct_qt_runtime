@@ -9,8 +9,8 @@
 // IWYU pragma: no_include "gtest/gtest_pred_impl.h"
 #endif
 
-#include "kaitai/kaitaistream.h"
-#include "kaitai/exceptions.h"
+#include "kaitai-qt/kaitaistream.h"
+#include "kaitai-qt/exceptions.h"
 
 #include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
 

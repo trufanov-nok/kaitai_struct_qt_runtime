@@ -21,6 +21,6 @@ target_compile_options(unittest PRIVATE
 )
 
 # Link the test executable with the main library and the test framework/library
-target_link_libraries(unittest PRIVATE kaitai_struct_cpp_stl_runtime GTest::GTest GTest::Main)
+target_link_libraries(unittest PRIVATE kaitai_struct_qt_runtime GTest::GTest GTest::Main)
 
 add_test(NAME unittest COMMAND unittest)

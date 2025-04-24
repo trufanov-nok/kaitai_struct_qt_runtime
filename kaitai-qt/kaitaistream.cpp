@@ -1,51 +1,7 @@
-#include <kaitai/kaitaistream.h>
-#include <kaitai/exceptions.h>
+#include <kaitai-qt/kaitaistream.h>
+#include <kaitai-qt/exceptions.h>
 
-#if defined(__APPLE__)
-#include <machine/endian.h>
-#include <libkern/OSByteOrder.h>
-#define bswap_16(x) OSSwapInt16(x)
-#define bswap_32(x) OSSwapInt32(x)
-#define bswap_64(x) OSSwapInt64(x)
-#define __BYTE_ORDER    BYTE_ORDER
-#define __BIG_ENDIAN    BIG_ENDIAN
-#define __LITTLE_ENDIAN LITTLE_ENDIAN
-#elif defined(_MSC_VER) // !__APPLE__
-#include <stdlib.h>
-#define __LITTLE_ENDIAN     1234
-#define __BIG_ENDIAN        4321
-#define __BYTE_ORDER        __LITTLE_ENDIAN
-#define bswap_16(x) _byteswap_ushort(x)
-#define bswap_32(x) _byteswap_ulong(x)
-#define bswap_64(x) _byteswap_uint64(x)
-#elif defined(__QNX__) // __QNX__
-#include <sys/param.h>
-#include <gulliver.h>
-#define bswap_16(x) ENDIAN_RET16(x)
-#define bswap_32(x) ENDIAN_RET32(x)
-#define bswap_64(x) ENDIAN_RET64(x)
-#define __BYTE_ORDER    BYTE_ORDER
-#define __BIG_ENDIAN    BIG_ENDIAN
-#define __LITTLE_ENDIAN LITTLE_ENDIAN
-#else
-// At this point it's either Linux or BSD. Both have "sys/param.h", so it's safe to include
-#include <sys/param.h> // `BSD` macro  // IWYU pragma: keep
-#if defined(BSD)
-// Supposed to work on FreeBSD: https://man.freebsd.org/cgi/man.cgi?query=bswap16&manpath=FreeBSD+14.0-RELEASE
-// Supposed to work on NetBSD: https://man.netbsd.org/NetBSD-10.0/bswap16.3
-#include <sys/endian.h>
-#include <sys/types.h>
-#define bswap_16(x) bswap16(x)
-#define bswap_32(x) bswap32(x)
-#define bswap_64(x) bswap64(x)
-#define __BYTE_ORDER    BYTE_ORDER
-#define __BIG_ENDIAN    BIG_ENDIAN
-#define __LITTLE_ENDIAN LITTLE_ENDIAN
-#else // !__APPLE__ or !_MSC_VER or !__QNX__ or !BSD
-#include <endian.h>
-#include <byteswap.h>
-#endif
-#endif
+#include <QtEndian>
 
 #include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
 
@@ -203,8 +159,8 @@ int8_t kaitai::kstream::read_s1() {
 int16_t kaitai::kstream::read_s2be() {
     int16_t t;
     m_io->read(reinterpret_cast<char *>(&t), 2);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_16(t);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    t = qbswap< qint16 >(t);
 #endif
     return t;
 }
@@ -212,8 +168,8 @@ int16_t kaitai::kstream::read_s2be() {
 int32_t kaitai::kstream::read_s4be() {
     int32_t t;
     m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_32(t);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    t = qbswap< qint32 > (t);
 #endif
     return t;
 }
@@ -221,8 +177,8 @@ int32_t kaitai::kstream::read_s4be() {
 int64_t kaitai::kstream::read_s8be() {
     int64_t t;
     m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_64(t);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    t = qbswap< qint64 > (t);
 #endif
     return t;
 }
@@ -234,8 +190,8 @@ int64_t kaitai::kstream::read_s8be() {
 int16_t kaitai::kstream::read_s2le() {
     int16_t t;
     m_io->read(reinterpret_cast<char *>(&t), 2);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_16(t);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    t = qbswap< qint16 > (t);
 #endif
     return t;
 }
@@ -243,8 +199,8 @@ int16_t kaitai::kstream::read_s2le() {
 int32_t kaitai::kstream::read_s4le() {
     int32_t t;
     m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_32(t);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    t = qbswap< qint32 > (t);
 #endif
     return t;
 }
@@ -252,8 +208,8 @@ int32_t kaitai::kstream::read_s4le() {
 int64_t kaitai::kstream::read_s8le() {
     int64_t t;
     m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_64(t);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    t = qbswap< qint64 > (t);
 #endif
     return t;
 }
@@ -275,8 +231,8 @@ uint8_t kaitai::kstream::read_u1() {
 uint16_t kaitai::kstream::read_u2be() {
     uint16_t t;
     m_io->read(reinterpret_cast<char *>(&t), 2);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_16(t);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    t = qbswap< quint16 > (t);
 #endif
     return t;
 }
@@ -284,8 +240,8 @@ uint16_t kaitai::kstream::read_u2be() {
 uint32_t kaitai::kstream::read_u4be() {
     uint32_t t;
     m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_32(t);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    t = qbswap< quint32 > (t);
 #endif
     return t;
 }
@@ -293,8 +249,8 @@ uint32_t kaitai::kstream::read_u4be() {
 uint64_t kaitai::kstream::read_u8be() {
     uint64_t t;
     m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_64(t);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    t = qbswap< quint64 > (t);
 #endif
     return t;
 }
@@ -306,8 +262,8 @@ uint64_t kaitai::kstream::read_u8be() {
 uint16_t kaitai::kstream::read_u2le() {
     uint16_t t;
     m_io->read(reinterpret_cast<char *>(&t), 2);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_16(t);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    t = qbswap< quint16 > (t);
 #endif
     return t;
 }
@@ -315,8 +271,8 @@ uint16_t kaitai::kstream::read_u2le() {
 uint32_t kaitai::kstream::read_u4le() {
     uint32_t t;
     m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_32(t);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    t = qbswap< quint32 > (t);
 #endif
     return t;
 }
@@ -324,8 +280,8 @@ uint32_t kaitai::kstream::read_u4le() {
 uint64_t kaitai::kstream::read_u8le() {
     uint64_t t;
     m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_64(t);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    t = qbswap< quint64 > (t);
 #endif
     return t;
 }
@@ -341,8 +297,8 @@ uint64_t kaitai::kstream::read_u8le() {
 float kaitai::kstream::read_f4be() {
     uint32_t t;
     m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_32(t);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    t = qbswap< quint32 > (t);
 #endif
     return bit_cast<float>(t);
 }
@@ -350,8 +306,8 @@ float kaitai::kstream::read_f4be() {
 double kaitai::kstream::read_f8be() {
     uint64_t t;
     m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-    t = bswap_64(t);
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    t = qbswap< quint64 > (t);
 #endif
     return bit_cast<double>(t);
 }
@@ -363,8 +319,8 @@ double kaitai::kstream::read_f8be() {
 float kaitai::kstream::read_f4le() {
     uint32_t t;
     m_io->read(reinterpret_cast<char *>(&t), 4);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_32(t);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    t = qbswap< quint32 > (t);
 #endif
     return bit_cast<float>(t);
 }
@@ -372,8 +328,8 @@ float kaitai::kstream::read_f4le() {
 double kaitai::kstream::read_f8le() {
     uint64_t t;
     m_io->read(reinterpret_cast<char *>(&t), 8);
-#if __BYTE_ORDER == __BIG_ENDIAN
-    t = bswap_64(t);
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    t = qbswap< quint64 > (t);
 #endif
     return bit_cast<double>(t);
 }
@@ -996,7 +952,7 @@ int kaitai::kstream::encoding_to_win_codepage(const char *src_enc) {
     // See https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
     //
     // This method should handle at least all canonical encoding names listed in
-    // <https://github.com/kaitai-io/kaitai_struct_compiler/blob/5832a81a48e10c3c207748486e09bd58b9aa4000/shared/src/main/scala/io/kaitai/struct/EncodingList.scala>,
+    // <https://github.com/kaitai-io/kaitai_struct_compiler/blob/5832a81a48e10c3c207748486e09bd58b9aa4000/shared/src/main/scala/io/kaitai-qt/struct/EncodingList.scala>,
     // preferably in the same order so that both sets of encodings can be easily compared.
     if (enc == "ASCII")
         return 20127;

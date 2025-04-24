@@ -46,7 +46,7 @@ try {
     }
 
     cp $GTestPath\debug\bin\*.dll tests\Debug
-    cp Debug\kaitai_struct_cpp_stl_runtime.dll tests\Debug
+    cp Debug\kaitai_struct_qt_runtime.dll tests\Debug
 } finally {
     Pop-Location
 }

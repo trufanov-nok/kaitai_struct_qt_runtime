@@ -1,6 +1,6 @@
-# Kaitai Struct: runtime library for C++/STL
+# Kaitai Struct: runtime library for Qt
 
-This library implements Kaitai Struct API for C++ using STL.
+This library implements Kaitai Struct API for Qt.
 
 Kaitai Struct is a declarative language used for describe various binary
 data structures, laid out in files or in memory: i.e. binary file
